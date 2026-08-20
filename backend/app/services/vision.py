@@ -7,24 +7,30 @@ from typing import List, Dict, Any, Optional, Tuple
 from ultralytics import YOLO
 import logging
 from pathlib import Path
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 class VisionService:
     """Service for computer vision detection using YOLOv8."""
 
-    def __init__(self, model_path: Optional[str] = None):
+    def __init__(self, model_path: Optional[str] = None, lazy_load: bool = True):
         """
         Initialize the vision service.
 
         Args:
-            model_path: Path to custom YOLO model. If None, uses pretrained YOLOv8n.
+            model_path: Path to custom YOLO model. If None, uses settings.CUSTOM_YOLO_MODEL_PATH or pretrained YOLOv8n.
+            lazy_load: If True, delays model loading until first use. If False, loads immediately.
         """
         self.model = None
-        self.model_path = model_path
+        # Use provided model_path, or fall back to settings, or None for default model
+        self.model_path = model_path or settings.CUSTOM_YOLO_MODEL_PATH
         self.class_names = []
         self.is_loaded = False
-        self.load_model()
+        self._lazy_load = lazy_load
+
+        if not lazy_load:
+            self.load_model()
 
     def load_model(self) -> bool:
         """
@@ -67,6 +73,13 @@ class VisionService:
         Returns:
             List of detection dictionaries
         """
+        # Lazy load model if not loaded and lazy loading is enabled
+        if not self.is_model_loaded() and self._lazy_load:
+            logger.info("Lazy loading YOLO model on first use")
+            if not self.load_model():
+                logger.warning("Failed to load model, returning mock detections")
+                return self._get_mock_detections()
+
         if not self.is_model_loaded():
             logger.warning("Model not loaded, returning empty detections")
             return self._get_mock_detections()
@@ -162,35 +175,53 @@ class VisionService:
 
     def get_disaster_relevant_detections(self, detections: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Filter detections for disaster-relevant classes.
+        Filter and score detections for disaster relevance using configurable weights.
 
         Args:
             detections: List of all detections
 
         Returns:
-            List of disaster-relevant detections
+            List of disaster-relevant detections sorted by relevance score (descending)
         """
-        # Define disaster-relevant classes (using COCO classes as baseline)
-        disaster_classes = {
-            'person',      # Survivors
-            'car',         # Vehicles
-            'truck',       # Emergency vehicles
-            'bus',         # Transport
-            'motorbike',   # Personal transport
-            'bicycle',     # Personal transport
-            'dog',         # Animals (may indicate presence of people)
-            'cat'          # Animals
-        }
+        # Get disaster class weights from settings, with fallback defaults
+        disaster_weights = getattr(settings, 'DISASTER_CLASS_WEIGHTS', {
+            'person': 1.0,      # Survivors
+            'fire': 0.9,        # Fire detection
+            'smoke': 0.8,       # Smoke indication
+            'car': 0.7,         # Vehicles
+            'truck': 0.8,       # Emergency vehicles
+            'bus': 0.7,         # Transport
+            'motorbike': 0.6,   # Personal transport
+            'bicycle': 0.6,     # Personal transport
+            'dog': 0.5,         # Animals
+            'cat': 0.5,         # Animals
+            'knife': 0.4,       # Weapons
+            'gun': 0.4,         # Weapons
+        })
 
-        # Note: Standard YOLOv8 doesn't have specific disaster classes like fire, collapse, etc.
-        # In a real implementation, we would use a custom-trained model
-        relevant_detections = [
-            det for det in detections
-            if det['class'].lower() in disaster_classes
-        ]
+        # Score detections based on class weights and confidence
+        scored_detections = []
+        for det in detections:
+            class_name = det['class'].lower()
+            confidence = det['confidence']
 
-        logger.info(f"Filtered to {len(relevant_detections)} disaster-relevant detections")
-        return relevant_detections
+            # Calculate relevance score: weight * confidence
+            # If class not in weights, give it a minimal score
+            weight = disaster_weights.get(class_name, 0.1)
+            relevance_score = weight * confidence
+
+            # Only include detections with meaningful relevance score
+            if relevance_score > 0.1:  # Minimum threshold
+                det_with_score = det.copy()
+                det_with_score['relevance_score'] = relevance_score
+                det_with_score['disaster_relevant'] = True
+                scored_detections.append(det_with_score)
+
+        # Sort by relevance score (descending)
+        scored_detections.sort(key=lambda x: x['relevance_score'], reverse=True)
+
+        logger.info(f"Scored and filtered to {len(scored_detections)} disaster-relevant detections")
+        return scored_detections
 
     def get_available_classes(self) -> List[str]:
         """Get list of available detection classes."""

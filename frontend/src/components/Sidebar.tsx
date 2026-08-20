@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Home,
   Map,
-  Camera,
   AlertTriangle,
   Users,
   Truck,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 
 export const Sidebar = () => {
+  const { t } = useTranslation();
   return (
     <aside className="w-64 bg-white border-r border-gray-200">
       <div className="flex flex-col h-full px-3 pt-4">
@@ -29,7 +30,7 @@ export const Sidebar = () => {
             }
           >
             <Home className="h-5 w-5 flex-shrink-0" />
-            Overview
+            {t('Overview', 'Overview')}
           </NavLink>
           <NavLink
             to="/live-map"
@@ -38,26 +39,9 @@ export const Sidebar = () => {
             }
           >
             <Map className="h-5 w-5 flex-shrink-0" />
-            Live Map
+            {t('Live Incident Map', 'Live Incident Map')}
           </NavLink>
-          <NavLink
-            to="/ai-vision"
-            className={({ isActive }) =>
-              `flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md ${isActive ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 hover:text-gray-900'}`
-            }
-          >
-            <Camera className="h-5 w-5 flex-shrink-0" />
-            AI Vision
-          </NavLink>
-          <NavLink
-            to="/risk-analysis"
-            className={({ isActive }) =>
-              `flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md ${isActive ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50 hover:text-gray-900'}`
-            }
-          >
-            <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-            Risk Analysis
-          </NavLink>
+
           <NavLink
             to="/rescue-mesh"
             className={({ isActive }) =>
@@ -65,7 +49,7 @@ export const Sidebar = () => {
             }
           >
             <Users className="h-5 w-5 flex-shrink-0" />
-            Rescue Mesh
+            {t('Rescue Mesh Network', 'Rescue Mesh')}
           </NavLink>
           <NavLink
             to="/incident-reports"
@@ -83,7 +67,7 @@ export const Sidebar = () => {
             }
           >
             <Truck className="h-5 w-5 flex-shrink-0" />
-            Rescue Operations
+            {t('Rescue Operations', 'Rescue Operations')}
           </NavLink>
           <NavLink
             to="/ai-briefing"
@@ -101,7 +85,7 @@ export const Sidebar = () => {
             }
           >
             <Settings className="h-5 w-5 flex-shrink-0" />
-            Settings
+            {t('Settings', 'Settings')}
           </NavLink>
         </nav>
       </div>

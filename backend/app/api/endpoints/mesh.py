@@ -1,11 +1,13 @@
 """
 Mesh networking endpoints for peer-to-peer communication.
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from typing import List, Dict, Any
 import logging
 import uuid
+import json
 from datetime import datetime
+from app.services.webrtc_signaling import signaling_manager
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +112,7 @@ async def send_message(message_data: Dict[str, Any]):
         if sender_id not in mesh_peers:
             raise HTTPException(status_code=400, detail=f"Sender peer {sender_id} not found")
         if receiver_id not in mesh_peers:
-            raise HTTPException(status_code=400, detail=f"Receiver peer {receiver_id} not found"
+            raise HTTPException(status_code=400, detail=f"Receiver peer {receiver_id} not found")
 
         # Create message
         message_id = str(uuid.uuid4())
@@ -228,3 +230,39 @@ async def get_mesh_stats():
             "delivery_rate": round((delivered_messages / total_messages * 100) if total_messages > 0 else 0, 2)
         }
     }
+
+@router.websocket("/ws/signaling/{peer_id}")
+async def websocket_endpoint(websocket: WebSocket, peer_id: str):
+    await signaling_manager.connect(peer_id, websocket)
+    
+    # Send current connected peers list to the newly connected peer
+    await signaling_manager.send_personal_message({
+        "type": "peer-list",
+        "peers": signaling_manager.get_connected_peers()
+    }, peer_id)
+
+    try:
+        while True:
+            # Wait for any message from the client
+            data = await websocket.receive_text()
+            message = json.loads(data)
+            
+            # The message should always have a target peer
+            target = message.get("target")
+            if not target:
+                logger.warning(f"Message from {peer_id} missing target. Payload: {message}")
+                continue
+
+            # Route the message to the target peer
+            logger.debug(f"Routing message of type {message.get('type')} from {peer_id} to {target}")
+            
+            # Append the sender's id
+            message["sender"] = peer_id
+            
+            await signaling_manager.send_personal_message(message, target)
+
+    except WebSocketDisconnect:
+        await signaling_manager.handle_disconnect(peer_id)
+    except Exception as e:
+        logger.error(f"Error in signaling websocket for peer {peer_id}: {e}")
+        await signaling_manager.handle_disconnect(peer_id)

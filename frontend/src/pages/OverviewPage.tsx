@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { WifiOff, Zap, Users, Activity, ClipboardList, MapPin, AlertTriangle } from 'lucide-react';
@@ -6,23 +6,17 @@ import { api, Zone, Report } from '@/services/api';
 import { DemoSimulationControls } from '@/components/DemoSimulationControls';
 
 export const OverviewPage = () => {
-  const [stats, setStats] = useState({
-    activeIncidents: 0,
-    criticalZones: 0,
-    survivorsDetected: 0,
-    activeRescueTeams: 0,
-    meshConnectedDevices: 0,
-    unresolvedReports: 0
-  });
-
-  const [topZones, setTopZones] = useState<Zone[]>([]);
-  const [recentReports, setRecentReports] = useState<Report[]>([]);
+  const [zones, setZones] = useState<Zone[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [detections, setDetections] = useState<Detection[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [incidents, zones, reports, detections, resources] = await Promise.all([
+        const [incidentsData, zonesData, reportsData, detectionsData, resourcesData] = await Promise.all([
           api.getIncidents(),
           api.getZones(),
           api.getReports(),
@@ -30,32 +24,49 @@ export const OverviewPage = () => {
           api.getResources()
         ]);
 
-        const criticalZones = zones.filter(z => z.severity === 'CRITICAL' || z.risk_score > 80);
-        
-        setStats({
-          activeIncidents: incidents.length,
-          criticalZones: criticalZones.length,
-          survivorsDetected: detections.filter(d => d.class === 'person').length,
-          activeRescueTeams: resources.filter(r => r.type !== 'shelter' && r.status === 'deployed').length,
-          meshConnectedDevices: 8, // Stub until mesh API is wired
-          unresolvedReports: reports.filter(r => r.status === 'NEW' || r.status === 'INVESTIGATING').length
-        });
+        setIncidents(incidentsData);
+        setZones(zonesData);
+        setReports(reportsData);
+        setDetections(detectionsData);
+        setResources(resourcesData);
 
-        setTopZones(zones.sort((a, b) => b.risk_score - a.risk_score).slice(0, 3));
-        setRecentReports(reports.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 3));
-        
       } catch (err) {
         console.error("Error fetching overview data", err);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchData();
     // Optional polling for demo
     const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Optimize computations with useMemo to prevent recalculating on every render
+  const topZones = useMemo(() => {
+    return [...zones].sort((a, b) => b.risk_score - a.risk_score).slice(0, 3);
+  }, [zones]);
+
+  const recentReports = useMemo(() => {
+    return [...reports].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 3);
+  }, [reports]);
+
+  const criticalZones = useMemo(() => {
+    return zones.filter(z => z.severity === 'CRITICAL' || z.risk_score > 80);
+  }, [zones]);
+
+  const survivorsDetected = useMemo(() => {
+    return detections.filter(d => d.class === 'person').length;
+  }, [detections]);
+
+  const activeRescueTeams = useMemo(() => {
+    return resources.filter(r => r.type !== 'shelter' && r.status === 'deployed').length;
+  }, [resources]);
+
+  const unresolvedReports = useMemo(() => {
+    return reports.filter(r => r.status === 'NEW' || r.status === 'INVESTIGATING').length;
+  }, [reports]);
 
   return (
     <div className="space-y-6">
@@ -70,7 +81,7 @@ export const OverviewPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Active Incidents</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.activeIncidents}</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{incidents.length}</p>
             </div>
             <div className="p-2 rounded-md bg-blue-50">
               <MapPin className="h-5 w-5 text-blue-500" />
@@ -81,7 +92,7 @@ export const OverviewPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Critical Zones</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.criticalZones}</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{criticalZones.length}</p>
             </div>
             <div className="p-2 rounded-md bg-red-50">
               <AlertTriangle className="h-5 w-5 text-red-500" />
@@ -92,7 +103,7 @@ export const OverviewPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Survivors Detected</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.survivorsDetected}</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{survivorsDetected}</p>
             </div>
             <div className="p-2 rounded-md bg-green-50">
               <Users className="h-5 w-5 text-green-500" />
@@ -103,7 +114,7 @@ export const OverviewPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Active Rescue Teams</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.activeRescueTeams}</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{activeRescueTeams}</p>
             </div>
             <div className="p-2 rounded-md bg-indigo-50">
               <Users className="h-5 w-5 text-indigo-500" />
@@ -114,7 +125,7 @@ export const OverviewPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Mesh-connected Devices</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.meshConnectedDevices}</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">0</p>
             </div>
             <div className="p-2 rounded-md bg-yellow-50">
               <Zap className="h-5 w-5 text-yellow-500" />
@@ -125,7 +136,7 @@ export const OverviewPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Unresolved Reports</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.unresolvedReports}</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900">{unresolvedReports}</p>
             </div>
             <div className="p-2 rounded-md bg-purple-50">
               <ClipboardList className="h-5 w-5 text-purple-500" />

@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# Initialize vision service
-vision_service = VisionService()
+# Initialize vision service with lazy loading for faster startup
+vision_service = VisionService(lazy_load=True)
 
 @router.post("/analyze")
 async def analyze_image(file: UploadFile = File(...)):
@@ -41,7 +41,7 @@ async def analyze_image(file: UploadFile = File(...)):
         # Run detection
         detections = vision_service.detect_objects(image)
 
-        # Filter for disaster-relevant detections
+        # Filter and score for disaster-relevant detections
         disaster_detections = vision_service.get_disaster_relevant_detections(detections)
 
         logger.info(f"Analysis complete: {len(detections)} total detections, {len(disaster_detections)} disaster-relevant")

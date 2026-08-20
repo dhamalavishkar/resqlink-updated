@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LucideIcon, Menu, X, WifiOff, Zap, Users, Bell } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
 interface NetworkStatus {
   internet: boolean;
@@ -58,6 +60,17 @@ export const Header = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
+            {/* Language Selector */}
+            <div className="relative">
+              <select 
+                className="bg-transparent border border-gray-300 text-gray-700 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-1.5"
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                defaultValue={i18n.language}
+              >
+                <option value="en">EN</option>
+                <option value="es">ES</option>
+              </select>
+            </div>
             {/* User profile and notifications */}
             <div className="relative">
               <button className="p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">

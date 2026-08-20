@@ -1,0 +1,35 @@
+
+> resqlink-frontend@0.1.0 dev
+> vite
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1842[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m6:27:33 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/AIBriefingPage.tsx, /src/pages/RescueOperationsPage.tsx, /src/pages/LiveMapPage.tsx, /src/pages/IncidentReportsPage.tsx, /src/pages/AIVisionPage.tsx, /src/pages/OverviewPage.tsx, /src/pages/RescueMeshPage.tsx, /src/components/DemoSimulationControls.tsx[22m
+[2m6:29:55 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+[2m6:30:14 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Sidebar.tsx, /src/index.css[22m
+[2m6:40:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m6:41:08 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m6:41:16 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m6:41:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m6:41:34 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m6:41:43 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m6:41:52 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m6:49:11 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/AIBriefingPage.tsx, /src/pages/RescueOperationsPage.tsx, /src/pages/LiveMapPage.tsx, /src/pages/IncidentReportsPage.tsx, /src/pages/AIVisionPage.tsx, /src/pages/OverviewPage.tsx, /src/pages/RescueMeshPage.tsx, /src/components/DemoSimulationControls.tsx, /src/pages/FieldReporterPage.tsx[22m
+[2m6:52:08 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AIBriefingPage.tsx, /src/index.css[22m
+[2m7:04:00 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AIBriefingPage.tsx, /src/index.css[22m
+[2m7:04:00 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m
+[2m7:04:01 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/AIBriefingPage.tsx, /src/index.css[22m
+[2m7:04:01 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/AIBriefingPage.tsx, /src/pages/RescueOperationsPage.tsx, /src/pages/LiveMapPage.tsx, /src/pages/IncidentReportsPage.tsx, /src/pages/AIVisionPage.tsx, /src/pages/OverviewPage.tsx, /src/pages/RescueMeshPage.tsx, /src/components/DemoSimulationControls.tsx, /src/pages/FieldReporterPage.tsx[22m
+[2m7:04:01 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/AIBriefingPage.tsx, /src/pages/RescueOperationsPage.tsx, /src/pages/LiveMapPage.tsx, /src/pages/IncidentReportsPage.tsx, /src/pages/AIVisionPage.tsx, /src/pages/OverviewPage.tsx, /src/pages/RescueMeshPage.tsx, /src/components/DemoSimulationControls.tsx, /src/pages/FieldReporterPage.tsx[22m
+[2m7:04:02 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css, /src/pages/AIBriefingPage.tsx, /src/pages/RescueOperationsPage.tsx, /src/pages/LiveMapPage.tsx, /src/pages/IncidentReportsPage.tsx, /src/pages/AIVisionPage.tsx, /src/pages/OverviewPage.tsx, /src/pages/RescueMeshPage.tsx, /src/components/DemoSimulationControls.tsx, /src/pages/FieldReporterPage.tsx[22m
+[2m7:04:11 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+[2m7:04:11 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+[2m7:04:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+[2m7:04:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Sidebar.tsx, /src/index.css[22m
+[2m7:04:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.tsx, /src/index.css[22m
+[2m7:04:13 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Sidebar.tsx, /src/index.css[22m
+[2m7:04:16 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/Sidebar.tsx, /src/index.css[22m
+[2m7:04:20 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LiveMapPage.tsx, /src/index.css[22m

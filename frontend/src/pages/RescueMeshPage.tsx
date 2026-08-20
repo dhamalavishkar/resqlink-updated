@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, Zap, WifiOff, Activity, MapPin, ClipboardList, Send, RefreshCw, Loader2, CheckCircle2 } from 'lucide-react';
-import { queueRequest, getQueuedRequests } from '@/services/indexedDB';
+import { queueRequest, getQueuedRequests, removeQueuedRequest } from '@/services/indexedDB';
 import { syncEngine } from '@/services/syncEngine';
 import { api } from '@/services/api';
 
@@ -36,48 +36,173 @@ export const RescueMeshPage = () => {
   });
   const [isSending, setIsSending] = useState(false);
   const [roomCode, setRoomCode] = useState('');
+  const [queuedCount, setQueuedCount] = useState(0);
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch initial data and set up periodic updates
   useEffect(() => {
-    // Initialize mock data
-    setPeers([
-      { id: 'local', name: 'This Device', status: 'connected', hops: 0, queued: 0, delivered: 12 },
-      { id: 'peer-1', name: 'Responder Alpha', status: 'connected', hops: 1, queued: 2, delivered: 8 },
-      { id: 'peer-2', name: 'Base Station', status: 'disconnected', hops: 0, queued: 5, delivered: 15 },
-      { id: 'peer-3', name: 'Drone Unit', status: 'connecting', hops: 2, queued: 0, delivered: 3 }
-    ]);
+    const loadInitialData = async () => {
+      try {
+        setLoading(true);
 
-    setMessages([
-      {
-        id: 'msg-1',
-        content: 'Requesting medical evacuation for Zone A-01',
-        priority: 'CRITICAL',
-        timestamp: '2 minutes ago',
-        status: 'DELIVERED',
-        from: 'local',
-        to: 'peer-1'
-      },
-      {
-        id: 'msg-2',
-        content: 'Fire spreading north, need additional units',
-        priority: 'HIGH',
-        timestamp: '5 minutes ago',
-        status: 'QUEUED',
-        from: 'local',
-        to: 'peer-2'
-      },
-      {
-        id: 'msg-3',
-        content: 'All clear in Sector B, returning to base',
-        priority: 'NORMAL',
-        timestamp: '10 minutes ago',
-        status: 'DELIVERED',
-        from: 'peer-1',
-        to: 'local'
+        // Fetch peers, messages, and stats
+        const [peersData, messagesData, statsData] = await Promise.all([
+          api.getPeers(),
+          api.getMeshMessages(50),
+          api.getMeshStats()
+        ]);
+
+        // Process peers data
+        const processedPeers = [...peersData.peers || []];
+        // Ensure local device is in the peers list
+        const localPeerExists = processedPeers.some(p => p.peer_id === 'local' || p.id === 'local');
+        if (!localPeerExists) {
+          processedPeers.unshift({
+            peer_id: 'local',
+            id: 'local',
+            name: 'This Device',
+            status: 'connected',
+            hops: 0,
+            queued_messages: 0,
+            delivered_messages: 0,
+            last_seen: new Date().toISOString()
+          });
+        }
+
+        setPeers(processedPeers.map(peer => ({
+          id: peer.peer_id || peer.id,
+          name: peer.name || `Peer ${peer.peer_id || peer.id}`,
+          status: peer.status || 'disconnected',
+          hops: peer.hops || 0,
+          queued: peer.queued_messages || 0,
+          delivered: peer.delivered_messages || 0
+        })));
+
+        // Process messages data
+        const processedMessages = (messagesData.messages || []).map(msg => ({
+          id: msg.id,
+          content: msg.content || '',
+          priority: msg.priority || 'NORMAL',
+          timestamp: new Date(msg.timestamp).toLocaleTimeString(),
+          status: msg.status || 'CREATED',
+          from: msg.sender_id || 'unknown',
+          to: msg.receiver_id || 'unknown'
+        }));
+        setMessages(processedMessages);
+
+        // Set stats
+        setStats(statsData);
+
+        // Get queued requests count from IndexedDB
+        const queuedRequests = await getQueuedRequests();
+        setQueuedCount(queuedRequests.length);
+      } catch (err) {
+        console.error('Failed to load mesh data:', err);
+        // Fallback to mock data if API fails
+        setPeers([
+          { id: 'local', name: 'This Device', status: 'connected', hops: 0, queued: 0, delivered: 12 },
+          { id: 'peer-1', name: 'Responder Alpha', status: 'connected', hops: 1, queued: 2, delivered: 8 },
+          { id: 'peer-2', name: 'Base Station', status: 'disconnected', hops: 0, queued: 5, delivered: 15 },
+          { id: 'peer-3', name: 'Drone Unit', status: 'connecting', hops: 2, queued: 0, delivered: 3 }
+        ]);
+
+        setMessages([
+          {
+            id: 'msg-1',
+            content: 'Requesting medical evacuation for Zone A-01',
+            priority: 'CRITICAL',
+            timestamp: '2 minutes ago',
+            status: 'DELIVERED',
+            from: 'local',
+            to: 'peer-1'
+          },
+          {
+            id: 'msg-2',
+            content: 'Fire spreading north, need additional units',
+            priority: 'HIGH',
+            timestamp: '5 minutes ago',
+            status: 'QUEUED',
+            from: 'local',
+            to: 'peer-2'
+          },
+          {
+            id: 'msg-3',
+            content: 'All clear in Sector B, returning to base',
+            priority: 'NORMAL',
+            timestamp: '10 minutes ago',
+            status: 'DELIVERED',
+            from: 'peer-1',
+            to: 'local'
+          }
+        ]);
+      } finally {
+        setLoading(false);
       }
-    ]);
+    };
 
-    // Generate a room code for demo
-    setRoomCode(Math.random().toString(36).substring(2, 8).toUpperCase());
+    loadInitialData();
+
+    // Set up periodic updates (every 10 seconds)
+    const interval = setInterval(loadInitialData, 10000);
+
+    // Listen for online/offline events
+    const handleOnline = () => {
+      setMeshStatus('ONLINE');
+      syncEngine.setOnlineStatus(true);
+    };
+
+    const handleOffline = () => {
+      setMeshStatus('OFFLINE');
+      syncEngine.setOnlineStatus(false);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Set initial online status
+    if (navigator.onLine) {
+      handleOnline();
+    } else {
+      handleOffline();
+    }
+    
+    // Setup WebRTC Listeners
+    syncEngine.onPeerConnected((peerId) => {
+      console.log(`WebRTC connected to ${peerId}`);
+      setMeshStatus('MESH_ACTIVE');
+      setPeers(prev => {
+        if (!prev.find(p => p.id === peerId)) {
+          return [...prev, { id: peerId, name: `Peer ${peerId.substring(0, 4)}`, status: 'connected', hops: 1, queued: 0, delivered: 0 }];
+        }
+        return prev.map(p => p.id === peerId ? { ...p, status: 'connected' } : p);
+      });
+    });
+
+    syncEngine.onPeerDisconnected((peerId) => {
+      console.log(`WebRTC disconnected from ${peerId}`);
+      setPeers(prev => prev.map(p => p.id === peerId ? { ...p, status: 'disconnected' } : p));
+    });
+
+    syncEngine.onMessageReceived((data) => {
+      console.log('Received peer message:', data);
+      const newMsg = {
+        id: `msg-${Date.now()}`,
+        content: data.content || JSON.stringify(data),
+        priority: data.priority || 'NORMAL',
+        timestamp: new Date().toLocaleTimeString(),
+        status: 'DELIVERED' as const,
+        from: data.sender || 'unknown',
+        to: 'local'
+      };
+      setMessages(prev => [newMsg, ...prev]);
+    });
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -87,34 +212,53 @@ export const RescueMeshPage = () => {
     setIsSending(true);
     
     const newMsg = {
-      id: `msg-${Date.now()}`,
       content: newMessage.content,
       priority: newMessage.priority,
-      timestamp: new Date().toLocaleTimeString(),
-      status: meshStatus === 'OFFLINE' || meshStatus === 'DEGRADED' ? 'QUEUED' : 'DELIVERED',
-      from: 'local',
-      to: newMessage.recipient
+      incident_id: newMessage.incidentId || undefined,
+      coordinates: newMessage.coordinates ? {
+        lat: parseFloat(newMessage.coordinates.split(',')[0]),
+        lng: parseFloat(newMessage.coordinates.split(',')[1])
+      } : undefined,
+      sender_id: 'local',
+      receiver_id: newMessage.recipient,
+      status: 'CREATED'
     };
 
-    if (meshStatus === 'OFFLINE' || meshStatus === 'DEGRADED') {
-      // Offline mode: queue in IndexedDB
-      await queueRequest('/messages', 'POST', newMsg);
+    // 1. Try WebRTC Data Channel First (True Mesh)
+    const sentViaWebRTC = syncEngine.sendMessageToPeer(newMessage.recipient, {
+      ...newMsg,
+      sender: syncEngine.peerId
+    });
+
+    if (sentViaWebRTC) {
+      newMsg.status = 'DELIVERED';
+      console.log('Message sent via WebRTC Data Channel!');
     } else {
-      // Online mode: try to send via API
-      try {
-        await fetch('http://localhost:8000/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newMsg)
-        });
-      } catch (err) {
-        // Fallback to queue if network failed
+      // 2. Fallback to API / Store-and-Forward
+      if (meshStatus === 'ONLINE' || navigator.onLine) {
+        try {
+          const result = await api.sendMeshMessage(newMsg as any);
+          newMsg.status = result.status;
+        } catch (err) {
+          console.error("Failed to send via API", err);
+          newMsg.status = 'QUEUED';
+          await queueRequest('/messages', 'POST', newMsg);
+        }
+      } else {
         newMsg.status = 'QUEUED';
         await queueRequest('/messages', 'POST', newMsg);
       }
     }
 
-    setMessages(prev => [newMsg as any, ...prev]);
+    setMessages(prev => [{
+      id: `msg-${Date.now()}`,
+      content: newMsg.content,
+      priority: newMsg.priority,
+      timestamp: new Date().toLocaleTimeString(),
+      status: newMsg.status as any,
+      from: 'local',
+      to: newMsg.receiver_id
+    }, ...prev]);
     
     // Update peer queued/delivered counts
     setPeers(prev =>
@@ -133,14 +277,17 @@ export const RescueMeshPage = () => {
   };
 
   const toggleDemoMode = () => {
-    setIsDemoMode(!isDemoMode);
-    if (isDemoMode) {
-      setMeshStatus('ONLINE');
-      syncEngine.setOnlineStatus(true);
-    } else {
-      setMeshStatus('OFFLINE');
-      syncEngine.setOnlineStatus(false);
-    }
+    setIsDemoMode(prev => {
+      const newMode = !prev;
+      if (newMode) {
+        setMeshStatus('ONLINE');
+        syncEngine.setOnlineStatus(true);
+      } else {
+        setMeshStatus('OFFLINE');
+        syncEngine.setOnlineStatus(false);
+      }
+      return newMode;
+    });
   };
 
   return (

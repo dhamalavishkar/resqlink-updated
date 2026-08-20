@@ -229,6 +229,8 @@ class SupabaseService:
                 "reporter_type": "Citizen",
                 "severity": "HIGH",
                 "location": "Oak Street & Riverbank",
+                "location_lat": 20.5937,
+                "location_lng": 78.9629,
                 "confidence": 0.8,
                 "status": "NEW",
                 "created_at": "2026-08-19T14:25:00Z"
@@ -240,6 +242,8 @@ class SupabaseService:
                 "reporter_type": "Drone",
                 "severity": "CRITICAL",
                 "location": "Building 42, Industrial District",
+                "location_lat": 20.5700,
+                "location_lng": 78.9400,
                 "confidence": 0.95,
                 "status": "VERIFIED",
                 "created_at": "2026-08-19T14:20:00Z"

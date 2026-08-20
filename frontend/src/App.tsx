@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Suspense } from 'react';
 import { MainLayout } from './layouts/MainLayout';
 import { OverviewPage } from './pages/OverviewPage';
 import { LiveMapPage } from './pages/LiveMapPage';
-import { AIVisionPage } from './pages/AIVisionPage';
 import { RiskAnalysisPage } from './pages/RiskAnalysisPage';
 import { RescueMeshPage } from './pages/RescueMeshPage';
 import { IncidentReportsPage } from './pages/IncidentReportsPage';
@@ -13,13 +13,14 @@ import { SettingsPage } from './pages/SettingsPage';
 function App() {
   return (
     <BrowserRouter>
-      <MainLayout>
+      <Suspense fallback={<div>Loading...</div>}>
+        <MainLayout>
         <Routes>
           <Route path="/" element={<Navigate replace to="/overview" />} />
           <Route path="/overview" element={<OverviewPage />} />
           <Route path="/live-map" element={<LiveMapPage />} />
-          <Route path="/ai-vision" element={<AIVisionPage />} />
-          <Route path="/risk-analysis" element={<RiskAnalysisPage />} />
+          <Route path="/ai-vision" element={<Navigate replace to="/live-map" />} />
+          <Route path="/field-reporter" element={<Navigate replace to="/live-map" />} />
           <Route path="/rescue-mesh" element={<RescueMeshPage />} />
           <Route path="/incident-reports" element={<IncidentReportsPage />} />
           <Route path="/rescue-operations" element={<RescueOperationsPage />} />
@@ -28,6 +29,7 @@ function App() {
           <Route path="*" element={<Navigate replace to="/overview" />} />
         </Routes>
       </MainLayout>
+      </Suspense>
     </BrowserRouter>
   );
 }

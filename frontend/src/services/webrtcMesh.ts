@@ -1,53 +1,23 @@
-import { getQueuedRequests, removeQueuedRequest } from './indexedDB';
-import { api } from './api';
 import { v4 as uuidv4 } from 'uuid';
-
-const API_URL = 'http://localhost:8000/api/v1';
-const WS_URL = 'ws://localhost:8000/api/v1/mesh/ws/signaling';
 
 type PeerCallback = (peerId: string) => void;
 type MessageCallback = (message: any) => void;
 
-class SyncEngine {
-  private isOnline = navigator.onLine;
-  private syncInProgress = false;
-
-  // WebRTC properties
-  public peerId: string = uuidv4();
+export class WebRTCMeshEngine {
   private signalingSocket: WebSocket | null = null;
   private peerConnections: Map<string, RTCPeerConnection> = new Map();
   private dataChannels: Map<string, RTCDataChannel> = new Map();
+  
+  public peerId: string = uuidv4();
   
   private onPeerConnectedCallback?: PeerCallback;
   private onPeerDisconnectedCallback?: PeerCallback;
   private onMessageReceivedCallback?: MessageCallback;
 
-  constructor() {
-    window.addEventListener('online', () => {
-      this.isOnline = true;
-      console.log("Network online - triggering sync");
-      this.sync();
-      // Also try to connect to signaling server if online
-      this.connectSignaling();
-    });
-    
-    window.addEventListener('offline', () => {
-      this.isOnline = false;
-      console.log("Network offline - entering store-and-forward mode");
-      this.disconnectSignaling();
-    });
+  constructor(private signalingUrl: string = 'ws://localhost:8000/api/v1/mesh/ws/signaling') {}
 
-    // Initial connection attempt if online
-    if (this.isOnline) {
-      this.connectSignaling();
-    }
-  }
-
-  // WebRTC Signaling and Connection Setup
-  public connectSignaling() {
-    if (this.signalingSocket?.readyState === WebSocket.OPEN) return;
-    
-    this.signalingSocket = new WebSocket(`${WS_URL}/${this.peerId}`);
+  public connect() {
+    this.signalingSocket = new WebSocket(`${this.signalingUrl}/${this.peerId}`);
     
     this.signalingSocket.onopen = () => {
       console.log('Connected to signaling server as', this.peerId);
@@ -85,9 +55,38 @@ class SyncEngine {
     };
   }
 
-  public disconnectSignaling() {
+  public disconnect() {
     this.signalingSocket?.close();
-    // Keep peer connections alive! They work offline.
+    this.peerConnections.forEach(pc => pc.close());
+    this.peerConnections.clear();
+    this.dataChannels.clear();
+  }
+
+  public onPeerConnected(cb: PeerCallback) {
+    this.onPeerConnectedCallback = cb;
+  }
+
+  public onPeerDisconnected(cb: PeerCallback) {
+    this.onPeerDisconnectedCallback = cb;
+  }
+
+  public onMessageReceived(cb: MessageCallback) {
+    this.onMessageReceivedCallback = cb;
+  }
+
+  public getConnectedPeers(): string[] {
+    return Array.from(this.dataChannels.keys()).filter(id => 
+      this.dataChannels.get(id)?.readyState === 'open'
+    );
+  }
+
+  public broadcastMessage(payload: any) {
+    const message = JSON.stringify(payload);
+    this.dataChannels.forEach((channel, id) => {
+      if (channel.readyState === 'open') {
+        channel.send(message);
+      }
+    });
   }
 
   private createPeerConnection(targetPeerId: string): RTCPeerConnection {
@@ -217,92 +216,6 @@ class SyncEngine {
       this.signalingSocket.send(JSON.stringify(message));
     }
   }
-
-  // WebRTC API endpoints
-  public onPeerConnected(cb: PeerCallback) {
-    this.onPeerConnectedCallback = cb;
-  }
-
-  public onPeerDisconnected(cb: PeerCallback) {
-    this.onPeerDisconnectedCallback = cb;
-  }
-
-  public onMessageReceived(cb: MessageCallback) {
-    this.onMessageReceivedCallback = cb;
-  }
-
-  public getConnectedPeers(): string[] {
-    return Array.from(this.dataChannels.keys()).filter(id => 
-      this.dataChannels.get(id)?.readyState === 'open'
-    );
-  }
-
-  public broadcastMessage(payload: any) {
-    const message = JSON.stringify(payload);
-    this.dataChannels.forEach((channel) => {
-      if (channel.readyState === 'open') {
-        channel.send(message);
-      }
-    });
-  }
-
-  public sendMessageToPeer(peerId: string, payload: any) {
-    const channel = this.dataChannels.get(peerId);
-    if (channel?.readyState === 'open') {
-      channel.send(JSON.stringify(payload));
-      return true;
-    }
-    return false;
-  }
-
-  // Existing SyncEngine API
-  public setOnlineStatus(status: boolean) {
-    this.isOnline = status;
-    if (status) {
-      this.sync();
-      this.connectSignaling();
-    } else {
-      this.disconnectSignaling();
-    }
-  }
-
-  public getOnlineStatus() {
-    return this.isOnline;
-  }
-
-  async sync() {
-    if (!this.isOnline || this.syncInProgress) return;
-    this.syncInProgress = true;
-
-    try {
-      const queued = await getQueuedRequests();
-      if (queued.length === 0) return;
-
-      console.log(`Syncing ${queued.length} requests...`);
-      for (const req of queued) {
-        try {
-          const res = await fetch(`${API_URL}${req.endpoint}`, {
-            method: req.method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req.payload)
-          });
-          
-          if (res.ok) {
-            await removeQueuedRequest(req.id);
-            console.log(`Synced request ${req.id}`);
-          } else {
-            console.error(`Failed to sync request ${req.id} - ${res.statusText}`);
-          }
-        } catch (err) {
-          console.error(`Network error syncing request ${req.id}`);
-          // Break loop on first network failure to avoid spamming
-          break;
-        }
-      }
-    } finally {
-      this.syncInProgress = false;
-    }
-  }
 }
 
-export const syncEngine = new SyncEngine();
+export const webrtcMesh = new WebRTCMeshEngine();

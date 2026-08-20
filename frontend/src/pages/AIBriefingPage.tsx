@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { RefreshCw, Copy, Share2, AlertTriangle, Users, Activity, Flame, MapPin, Clock, ZapOff, Zap } from 'lucide-react';
@@ -8,26 +8,56 @@ export const AIBriefingPage = () => {
   const [briefing, setBriefing] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [templateType, setTemplateType] = useState<string>('general');
+  const [availableTemplates, setAvailableTemplates] = useState<Array<{value: string; label: string}>>([]);
+
+  // Fetch available templates on mount
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const res = await api.getAiBriefingTemplates();
+        setAvailableTemplates(
+          Object.entries(res.templates).map(([value, data]: [string, any]) => ({
+            value,
+            label: data.name
+          }))
+        );
+      } catch (err) {
+        console.error('Failed to fetch briefing templates:', err);
+        // Fallback to default templates
+        setAvailableTemplates([
+          { value: 'general', label: 'General Disaster' },
+          { value: 'fire', label: 'Fire Emergency' },
+          { value: 'flood', label: 'Flood Emergency' },
+          { value: 'earthquake', label: 'Earthquake Emergency' }
+        ]);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
 
   const generateBriefing = async () => {
     setIsGenerating(true);
     try {
       // Gather current state to send to AI
-      const [zones, reports, detections, resources] = await Promise.all([
+      const [zones, incidents, detections, resources] = await Promise.all([
         api.getZones(),
-        api.getReports(),
+        api.getIncidents(),
         api.getDetections(),
         api.getResources()
       ]);
-      
+
       const payload = {
         zones,
-        reports,
+        reports: incidents,
+        incidents,
         detections,
         resources,
         mesh_status: { connected: navigator.onLine },
         timestamp: new Date().toISOString(),
-        internet_available: navigator.onLine
+        internet_available: navigator.onLine,
+        template_type: templateType
       };
 
       const res = await api.getAiBriefing(payload);
@@ -44,7 +74,24 @@ export const AIBriefingPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">AI Situation Briefing</h2>
+        <div className="flex items-center space-x-3">
+          <h2 className="text-xl font-bold text-gray-900">AI Situation Briefing</h2>
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Template:</label>
+            <select
+              value={templateType}
+              onChange={(e) => setTemplateType(e.target.value)}
+              disabled={isGenerating}
+              className="border border-gray-300 rounded-md px-3 py-2 bg-white"
+            >
+              {availableTemplates.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"

@@ -1,9 +1,27 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IncidentReportsPage } from '../src/pages/IncidentReportsPage';
+import { api } from '@/services/api';
 import { vi } from 'vitest';
 
-test.skip('renders incident reports page', () => {
+vi.mock('@/services/api');
+
+beforeEach(() => {
+  // Mock the API calls for reports
+  api.getReports.mockResolvedValue([
+    { id: '1', title: 'Flood in Main Street', description: 'Flooding reported', reporter_type: 'Citizen', severity: 'HIGH', location: 'Main Street', confidence: 0.9, status: 'NEW', created_at: new Date().toISOString(), media: null },
+    { id: '2', title: 'Person trapped in building', description: 'Person trapped in building', reporter_type: 'Citizen', severity: 'CRITICAL', location: 'Elm Street', confidence: 0.95, status: 'NEW', created_at: new Date(Date.now() - 3600000).toISOString(), media: null }, // 1 hour ago
+    { id: '3', title: 'Road blocked by debris', description: 'Road blocked by fallen tree', reporter_type: 'Citizen', severity: 'NORMAL', location: 'Oak Avenue', confidence: 0.8, status: 'NEW', created_at: new Date(Date.now() - 7200000).toISOString(), media: null }, // 2 hours ago
+    { id: '4', title: 'Medical assistance needed', description: 'Person needs medical help', reporter_type: 'Citizen', severity: 'HIGH', location: 'Pine Street', confidence: 0.85, status: 'NEW', created_at: new Date(Date.now() - 10800000).toISOString(), media: null }, // 3 hours ago
+    { id: '5', title: 'Fire spreading north', description: 'Fire spreading north of town', reporter_type: 'Citizen', severity: 'CRITICAL', location: 'North Forest', confidence: 0.9, status: 'NEW', created_at: new Date(Date.now() - 14400000).toISOString(), media: null }, // 4 hours ago
+  ]);
+});
+
+afterEach(() => {
+  vi.resetAllMocks();
+});
+
+test('renders incident reports page', () => {
   render(<IncidentReportsPage />);
 
   // Check for main heading
@@ -41,29 +59,47 @@ test.skip('renders incident reports page', () => {
   expect(screen.getByText('Refresh')).toBeInTheDocument();
 });
 
-test.skip('can filter by reporter type', async () => {
+test('can filter by reporter type', async () => {
   render(<IncidentReportsPage />);
 
   // Find the Citizen checkbox and uncheck it to filter out Citizen reports
   const citizenCheckbox = screen.getByLabelText(/citizen/i);
   await userEvent.click(citizenCheckbox);
+  // After unchecking Citizen, we should not see any Citizen reports
+  expect(screen.queryByText('Flood in Main Street')).not.toBeInTheDocument();
+  expect(screen.queryByText('Person trapped in building')).not.toBeInTheDocument();
+  expect(screen.queryByText('Road blocked by debris')).not.toBeInTheDocument();
+  expect(screen.queryByText('Medical assistance needed')).not.toBeInTheDocument();
+  expect(screen.queryByText('Fire spreading north')).not.toBeInTheDocument();
 });
 
-test.skip('can filter by severity', async () => {
+test('can filter by severity', async () => {
   render(<IncidentReportsPage />);
 
-  const highSeverityBadge = screen.getByLabelText(/high/i);
-  await userEvent.click(highSeverityBadge);
+  const highSeverityCheckbox = screen.getByLabelText(/high/i);
+  await userEvent.click(highSeverityCheckbox);
+  // After checking only HIGH, we should see only HIGH severity reports
+  expect(screen.getByText('Flood in Main Street')).toBeInTheDocument();
+  expect(screen.getByText('Medical assistance needed')).toBeInTheDocument();
+  expect(screen.queryByText('Person trapped in building')).not.toBeInTheDocument(); // CRITICAL
+  expect(screen.queryByText('Road blocked by debris')).not.toBeInTheDocument(); // NORMAL
+  expect(screen.queryByText('Fire spreading north')).not.toBeInTheDocument(); // CRITICAL
 });
 
-test.skip('can filter by status', async () => {
+test('can filter by status', async () => {
   render(<IncidentReportsPage />);
 
   const newStatusCheckbox = screen.getByLabelText(/new/i);
   await userEvent.click(newStatusCheckbox);
+  // All reports are NEW, so they should still be visible
+  expect(screen.getByText('Flood in Main Street')).toBeInTheDocument();
+  expect(screen.getByText('Person trapped in building')).toBeInTheDocument();
+  expect(screen.getByText('Road blocked by debris')).toBeInTheDocument();
+  expect(screen.getByText('Medical assistance needed')).toBeInTheDocument();
+  expect(screen.getByText('Fire spreading north')).toBeInTheDocument();
 });
 
-test.skip('can sort by different fields', async () => {
+test('can sort by different fields', async () => {
   render(<IncidentReportsPage />);
 
   // Click on different sort options - these are radio buttons
@@ -81,7 +117,7 @@ test.skip('can sort by different fields', async () => {
   expect(screen.getByText('Reports List')).toBeInTheDocument();
 });
 
-test.skip('can create a new report', async () => {
+test('can create a new report', async () => {
   // Mock the alert function
   const alertMock = vi.fn();
   window.alert = alertMock;

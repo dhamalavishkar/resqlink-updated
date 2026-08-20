@@ -10,38 +10,26 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+from app.services.routing import GraphRoutingEngine
+
 class RouteRecommendationService:
     """Service for recommending safe routes avoiding hazardous zones."""
 
     def __init__(self):
         """Initialize the route service."""
-        # In a real implementation, this would use actual routing engines
-        # For MVP, we'll use a simple graph-based approach
+        # Initialize graph routing engine
+        self.routing_engine = GraphRoutingEngine()
 
     def calculate_distance(self, point1: Dict[str, float], point2: Dict[str, float]) -> float:
         """Calculate distance between two points using Haversine formula."""
-        lat1, lon1 = point1["lat"], point1["lng"]
-        lat2, lon2 = point2["lat"], point2["lng"]
-
-        R = 6371  # Earth's radius in kilometers
-
-        dlat = math.radians(lat2 - lat1)
-        dlon = math.radians(lon2 - lon1)
-        a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-        distance = R * c
-
-        return distance
+        return self.routing_engine.calculate_distance(point1, point2)
 
     def is_point_in_hazard_zone(self, point: Dict[str, float], hazard_zones: List[Dict[str, Any]]) -> bool:
         """Check if a point is within any hazard zone."""
         for zone in hazard_zones:
-            # Simple circular zone check - in reality, zones could be polygons
             zone_center = {"lat": zone.get("lat", 0), "lng": zone.get("lng", 0)}
-            zone_radius = zone.get("radius_km", 1.0)  # Default 1km radius
-
-            distance = self.calculate_distance(point, zone_center)
-            if distance <= zone_radius:
+            zone_radius = zone.get("radius_km", 1.0)
+            if self.calculate_distance(point, zone_center) <= zone_radius:
                 return True
         return False
 
@@ -49,43 +37,22 @@ class RouteRecommendationService:
                        hazard_zones: List[Dict[str, Any]], avoid_hazards: bool = True) -> Dict[str, Any]:
         """
         Recommend a route from start to end, optionally avoiding hazard zones.
-
-        Returns route information including waypoints, distance, and safety info.
         """
         try:
             logger.info(f"Calculating route from {start} to {end}")
 
-            # Straight line route (direct path)
-            direct_distance = self.calculate_distance(start, end)
-
-            # Check if direct path goes through hazards
-            direct_safe = True
             if avoid_hazards and hazard_zones:
-                # Sample points along the direct path
-                steps = 10
-                for i in range(steps + 1):
-                    fraction = i / steps
-                    point = {
-                        "lat": start["lat"] + (end["lat"] - start["lat"]) * fraction,
-                        "lng": start["lng"] + (end["lng"] - start["lng"]) * fraction
-                    }
-                    if self.is_point_in_hazard_zone(point, hazard_zones):
-                        direct_safe = False
-                        break
-
-            if direct_safe or not avoid_hazards:
-                # Direct route is safe or we're not avoiding hazards
-                route_points = [start, end]
-                total_distance = direct_distance
-                avoided_hazards = []
-                explanation = "Direct route is safe and efficient."
+                route_points = self.routing_engine.calculate_route(start, end, hazard_zones, algorithm='astar')
             else:
-                # Need to find an alternative route
-                # For MVP, we'll create a simple detour around the first detected hazard
-                route_points = self._create_detour_route(start, end, hazard_zones)
-                total_distance = self._calculate_route_distance(route_points)
-                avoided_hazards = self._get_avoided_hazards(route_points, hazard_zones)
+                route_points = [start, end]
+
+            total_distance = self._calculate_route_distance(route_points)
+            avoided_hazards = self._get_avoided_hazards(route_points, hazard_zones)
+            
+            if len(route_points) > 2 and avoid_hazards:
                 explanation = f"Route adjusted to avoid {len(avoided_hazards)} hazardous area(s)."
+            else:
+                explanation = "Direct route is used."
 
             # Calculate estimated time (assuming average speed of 20 km/h for emergency vehicles)
             estimated_time_hours = total_distance / 20.0
@@ -105,7 +72,7 @@ class RouteRecommendationService:
                 "summary": {
                     "start": start,
                     "end": end,
-                    "waypoints": len(route_points) - 2,  # Excluding start and end
+                    "waypoints": max(0, len(route_points) - 2),
                     "safety_score": self._calculate_safety_score(route_points, hazard_zones)
                 }
             }
