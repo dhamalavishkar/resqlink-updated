@@ -189,26 +189,7 @@ class SupabaseService:
     # Demo data methods (used when Supabase is not available)
     def _get_demo_incidents(self) -> List[Dict[str, Any]]:
         """Return demo incident data."""
-        return [
-            {
-                "id": "demo-1",
-                "title": "Mumbai Urban Flooding",
-                "description": "Heavy rainfall causing widespread flooding in low-lying areas",
-                "severity": "HIGH",
-                "location": {"lat": 19.0760, "lng": 72.8777},
-                "reported_at": "2026-08-19T10:00:00Z",
-                "updated_at": "2026-08-19T14:30:00Z"
-            },
-            {
-                "id": "demo-2",
-                "title": "Earthquake in Himalayan Region",
-                "description": "Magnitude 7.2 earthquake causing structural damage",
-                "severity": "CRITICAL",
-                "location": {"lat": 30.3165, "lng": 78.0322},
-                "reported_at": "2026-08-19T08:15:00Z",
-                "updated_at": "2026-08-19T14:25:00Z"
-            }
-        ]
+        return []
 
     def _get_demo_incident(self, incident_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo incident with provided data."""
@@ -221,34 +202,7 @@ class SupabaseService:
 
     def _get_demo_reports(self) -> List[Dict[str, Any]]:
         """Return demo report data."""
-        return [
-            {
-                "id": "demo-report-1",
-                "title": "Floating debris blocking main road",
-                "description": "Large tree trunk and debris blocking Oak Street near the river",
-                "reporter_type": "Citizen",
-                "severity": "HIGH",
-                "location": "Oak Street & Riverbank",
-                "location_lat": 20.5937,
-                "location_lng": 78.9629,
-                "confidence": 0.8,
-                "status": "NEW",
-                "created_at": "2026-08-19T14:25:00Z"
-            },
-            {
-                "id": "demo-report-2",
-                "title": "Survivors spotted on roof",
-                "description": "Three individuals waving for help on the roof of a collapsed building",
-                "reporter_type": "Drone",
-                "severity": "CRITICAL",
-                "location": "Building 42, Industrial District",
-                "location_lat": 20.5700,
-                "location_lng": 78.9400,
-                "confidence": 0.95,
-                "status": "VERIFIED",
-                "created_at": "2026-08-19T14:20:00Z"
-            }
-        ]
+        return []
 
     def _get_demo_report(self, report_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo report with provided data."""
@@ -260,34 +214,7 @@ class SupabaseService:
 
     def _get_demo_zones(self) -> List[Dict[str, Any]]:
         """Return demo zone data."""
-        return [
-            {
-                "id": "demo-zone-1",
-                "name": "Zone A-01",
-                "risk_score": 87,
-                "severity": "CRITICAL",
-                "population": 1200,
-                "survivors": 12,
-                "fires": 1,
-                "damage": 2,
-                "reports": 8,
-                "location": {"lat": 20.5937, "lng": 78.9629},
-                "updated_at": "2026-08-19T14:28:00Z"
-            },
-            {
-                "id": "demo-zone-2",
-                "name": "Zone B-07",
-                "risk_score": 72,
-                "severity": "HIGH",
-                "population": 800,
-                "survivors": 5,
-                "fires": 0,
-                "damage": 3,
-                "reports": 5,
-                "location": {"lat": 20.5700, "lng": 78.9400},
-                "updated_at": "2026-08-19T14:25:00Z"
-            }
-        ]
+        return []
 
     def _get_demo_zone(self, zone_id: str, zone_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo zone with provided data."""
@@ -299,35 +226,7 @@ class SupabaseService:
 
     def _get_demo_detections(self, limit: int = 50) -> List[Dict[str, Any]]:
         """Return demo detection data."""
-        return [
-            {
-                "id": "demo-det-1",
-                "class": "person",
-                "confidence": 0.92,
-                "bbox": [100.0, 150.0, 200.0, 300.0],
-                "source": "drone",
-                "location": {"lat": 20.5950, "lng": 78.9650},
-                "detected_at": "2026-08-19T14:20:00Z"
-            },
-            {
-                "id": "demo-det-2",
-                "class": "person",
-                "confidence": 0.87,
-                "bbox": [300.0, 100.0, 400.0, 250.0],
-                "source": "drone",
-                "location": {"lat": 20.5900, "lng": 78.9600},
-                "detected_at": "2026-08-19T14:18:00Z"
-            },
-            {
-                "id": "demo-det-3",
-                "class": "fire",
-                "confidence": 0.91,
-                "bbox": [400.0, 200.0, 500.0, 350.0],
-                "source": "satellite",
-                "location": {"lat": 20.5800, "lng": 78.9600},
-                "detected_at": "2026-08-19T14:15:00Z"
-            }
-        ][:limit]
+        return []
 
     def _get_demo_detection(self, detection_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo detection with provided data."""
@@ -339,30 +238,7 @@ class SupabaseService:
 
     def _get_demo_resources(self) -> List[Dict[str, Any]]:
         """Return demo resource data."""
-        return [
-            {
-                "id": "demo-res-1",
-                "type": "ambulance",
-                "name": "Ambulance 01",
-                "status": "available",
-                "location": "Central Hospital",
-                "assigned_zone": None,
-                "eta": None,
-                "capacity": "2 patients",
-                "updated_at": "2026-08-19T14:28:00Z"
-            },
-            {
-                "id": "demo-res-2",
-                "type": "fire_truck",
-                "name": "Fire Truck 07",
-                "status": "deployed",
-                "location": "En route to Zone A-01",
-                "assigned_zone": "Zone A-01",
-                "eta": "5 minutes",
-                "capacity": "1500 gal water",
-                "updated_at": "2026-08-19T14:25:00Z"
-            }
-        ]
+        return []
 
     def _get_demo_resource(self, resource_id: str, resource_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo resource with provided data."""

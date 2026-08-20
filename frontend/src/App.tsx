@@ -25,7 +25,6 @@ function App() {
           <Route path="/incident-reports" element={<IncidentReportsPage />} />
           <Route path="/rescue-operations" element={<RescueOperationsPage />} />
           <Route path="/ai-briefing" element={<AIBriefingPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate replace to="/overview" />} />
         </Routes>
       </MainLayout>

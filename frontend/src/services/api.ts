@@ -270,13 +270,16 @@ export const api = {
     formData.append('disaster_type', disasterType);
     if (description) formData.append('description', description);
 
-    const res = await fetch(`${API_URL}/field-reports/analyze`, {
+    const url = `${API_URL}/field-reports/analyze`;
+    console.log("SENDING UPLOAD REQUEST TO:", url);
+    const res = await fetch(url, {
       method: 'POST',
       body: formData
     });
     if (!res.ok) {
       const errorText = await res.text();
-      throw new Error(`Failed to analyze field media: ${errorText}`);
+      console.error("UPLOAD ERROR RESPONSE:", res.status, res.statusText, errorText, "URL WAS:", url);
+      throw new Error(`Failed to analyze field media: ${errorText} (URL: ${url})`);
     }
     return res.json();
   }

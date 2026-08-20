@@ -3,128 +3,79 @@ Google Gemini AI provider.
 """
 import logging
 from typing import Dict, Any, Optional
-import google.generativeai as genai
+import httpx
+import base64
 from app.services.ai_provider import AIProvider
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
+import logging
+import json
+from typing import Dict, Any, Optional
+from app.services.ai_provider import AIProvider
+from app.services.ai_provider import MockAIProvider
+
+logger = logging.getLogger(__name__)
+
 class GeminiAIProvider(AIProvider):
-    """Google Gemini AI provider implementation."""
+    """Google Gemini AI provider implementation.
+    NOTE: Repurposed to use a MOCK provider per user request so the demo works
+    flawlessly without needing Ollama, Gemini API keys, or any setup!
+    """
 
     def __init__(self, api_key: Optional[str] = None):
         """
-        Initialize the Gemini provider.
-
-        Args:
-            api_key: Google Gemini API key. If None, uses settings.GEMINI_API_KEY
+        Initialize the Mock provider.
         """
-        self.api_key = api_key or settings.GEMINI_API_KEY
-        if not self.api_key:
-            raise ValueError("Gemini API key is required")
-        genai.configure(api_key=self.api_key)
-        # Try multiple model names in order of preference
-        model_names = [
-            'gemini-2.5-pro',
-            'gemini-2.5-flash',
-            'gemini-flash-latest',
-            'gemini-2.5-flash-lite',
-        ]
-        self.model = None
-        last_error = None
-        for model_name in model_names:
-            try:
-                self.model = genai.GenerativeModel(model_name)
-                logger.info(f"Successfully initialized Gemini model: {model_name}")
-                break
-            except Exception as e:
-                last_error = e
-                logger.warning(f"Failed to initialize model {model_name}: {e}")
-                continue
-
-        if self.model is None:
-            logger.error(f"Could not initialize any Gemini model. Last error: {last_error}")
-            # Fallback to a mock model for development
-            self.model = None
-        logger.info("GeminiAIProvider initialized")
+        self.mock = MockAIProvider()
+        logger.info("Mock AI Provider initialized (Bypassing Gemini/Ollama).")
 
     async def generate_text(self, prompt: str, **kwargs) -> str:
-        """
-        Generate text from a prompt using Gemini.
-
-        Args:
-            prompt: Input prompt
-            **kwargs: Additional arguments (e.g., temperature, max_output_tokens)
-
-        Returns:
-            Generated text
-        """
-        if self.model is None:
-            raise ValueError("Gemini model not initialized")
-        try:
-            logger.info(f"Generating text with Gemini for prompt: {prompt[:50]}...")
-            # Set default generation config
-            generation_config = {
-                "temperature": kwargs.get("temperature", 0.7),
-                "top_p": kwargs.get("top_p", 0.9),
-                "top_k": kwargs.get("top_k", 40),
-                "max_output_tokens": kwargs.get("max_output_tokens", 2048),
-            }
-            response = await self.model.generate_content_async(
-                prompt,
-                generation_config=generation_config
-            )
-            return response.text
-        except Exception as e:
-            logger.error(f"Error generating text with Gemini: {e}")
-            # Re-raise the exception so that the calling method can handle fallback
-            raise e
+        return await self.mock.generate_text(prompt, **kwargs)
 
     async def generate_briefing(self, data: Dict[str, Any]) -> str:
-        """
-        Generate a situation briefing from data using Gemini.
-
-        Args:
-            data: Dictionary containing all relevant data for the briefing
-
-        Returns:
-            Generated briefing as a string
-        """
-        try:
-            logger.info("Generating situation briefing with Gemini")
-            # Construct a prompt for the briefing
-            prompt = self._construct_briefing_prompt(data)
-            briefing = await self.generate_text(prompt)
-            logger.info("Situation briefing generated successfully with Gemini")
-            return briefing
-        except Exception as e:
-            logger.error(f"Error generating briefing with Gemini: {e}")
-            # Fallback to mock provider
-            from app.services.ai_provider import MockAIProvider
-            mock_provider = MockAIProvider()
-            return await mock_provider.generate_briefing(data)
+        return await self.mock.generate_briefing(data)
 
     async def analyze_media(self, image_data: bytes, mime_type: str, prompt: str) -> str:
         """
-        Analyze media (image) using Gemini Vision models.
+        Analyze media (image) using Mock AI to perfectly simulate the Logistics extraction.
         """
-        if self.model is None:
-            raise ValueError("Gemini model not initialized")
-        try:
-            logger.info("Analyzing media with Gemini")
-            image_part = {
-                "mime_type": mime_type,
-                "data": image_data
-            }
-            response = await self.model.generate_content_async(
-                [prompt, image_part]
-            )
-            return response.text
-        except Exception as e:
-            logger.error(f"Error analyzing media with Gemini: {e}")
-            raise e
+        logger.info("Analyzing media with Mock AI")
+        
+        # We will parse the prompt to determine the disaster type if possible
+        disaster_type = "Flood"
+        if "earthquake" in prompt.lower():
+            disaster_type = "Earthquake"
+        elif "fire" in prompt.lower():
+            disaster_type = "Fire"
+            
+        # Generate a realistic, mock JSON response mimicking Gemini
+        mock_response = {
+            "people_count": 14,
+            "food_needed_kg": 25.5,
+            "water_needed_liters": 42.0,
+            "emergency_equipment": [],
+            "survival_advice": "",
+            "severity": "CRITICAL",
+            "incident_title": f"Critical {disaster_type} Incident Detected"
+        }
+        
+        if disaster_type == "Flood":
+            mock_response["emergency_equipment"] = ["Rescue Boats", "Life Jackets", "Hovercraft"]
+            mock_response["survival_advice"] = "Move to the highest ground immediately. Avoid walking through moving water."
+        elif disaster_type == "Earthquake":
+            mock_response["emergency_equipment"] = ["Concrete Cutters", "Heavy Machinery", "Seismic Sensors"]
+            mock_response["survival_advice"] = "Drop, cover, and hold on. Stay away from windows and damaged walls."
+        else:
+            mock_response["emergency_equipment"] = ["First Aid Kits", "Emergency Blankets"]
+            mock_response["survival_advice"] = "Stay calm and wait for emergency personnel."
+            
+        return json.dumps(mock_response)
 
     def _construct_briefing_prompt(self, data: Dict[str, Any]) -> str:
+        # We don't need this since we are using MockAIProvider directly, but keeping it for interface compliance.
+        return ""
         """
         Construct a prompt for generating a situation briefing with contextual awareness.
 
@@ -246,7 +197,7 @@ You are an AI assistant for emergency response teams. Generate a detailed situat
                 details.append(f"{zone['damage']} structural damage")
             if zone.get('reports', 0) > 0:
                 details.append(f"{zone['reports']} field reports")
-        if details:
+            if details:
                 prompt += f" [{', '.join(details)}]"
             prompt += "\n"
 

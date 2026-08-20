@@ -261,16 +261,20 @@ export const LiveMapPage = () => {
                   {layers.zones && zones.map(z => {
                     const coords = getCoords(z);
                     if (!coords) return null;
+                    const isCritical = z.severity === 'CRITICAL' || z.severity === 'HIGH';
+                    // We dynamically calculate radius to be larger for critical zones
+                    // Using animate-pulse makes it blink like a real disaster spot
                     return (
                       <CircleMarker
                         key={z.id}
                         center={coords}
-                        radius={12}
+                        radius={isCritical ? 35 : 15}
+                        className={isCritical ? 'animate-pulse' : ''}
                         pathOptions={{
                           color: zoneSeverityColor(z.severity),
                           fillColor: zoneSeverityColor(z.severity),
-                          fillOpacity: 0.35,
-                          weight: 2,
+                          fillOpacity: isCritical ? 0.6 : 0.35,
+                          weight: isCritical ? 3 : 2,
                         }}
                         eventHandlers={{ click: () => setSelectedZone(z) }}
                       >

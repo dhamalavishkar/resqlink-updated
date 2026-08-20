@@ -2,8 +2,34 @@ import { useEffect, useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { WifiOff, Zap, Users, Activity, ClipboardList, MapPin, AlertTriangle } from 'lucide-react';
-import { api, Zone, Report } from '@/services/api';
+import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet';
+import L from 'leaflet';
+import { api, Zone, Report, Detection, Resource, Incident } from '@/services/api';
 import { DemoSimulationControls } from '@/components/DemoSimulationControls';
+
+type CoordsSource = {
+  location?: { lat?: number; lng?: number } | null;
+  location_lat?: number | null;
+  location_lng?: number | null;
+};
+
+function getCoords(item: CoordsSource): [number, number] | null {
+  const lat = item.location?.lat ?? item.location_lat;
+  const lng = item.location?.lng ?? item.location_lng;
+  if (lat == null || lng == null || Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
+    return null;
+  }
+  return [Number(lat), Number(lng)];
+}
+
+const createIcon = (color: string, emoji: string) =>
+  L.divIcon({
+    html: `<div style="background:${color};width:28px;height:28px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;">${emoji}</div>`,
+    className: '',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14],
+  });
 
 export const OverviewPage = () => {
   const [zones, setZones] = useState<Zone[]>([]);
@@ -152,11 +178,35 @@ export const OverviewPage = () => {
               <CardTitle>Live Incident Map</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="h-64 bg-gray-200">
-                {/* Map will go here */}
-                <div className="flex h-full items-center justify-center text-gray-500">
-                  Map placeholder
-                </div>
+              <div className="h-96 w-full relative z-0">
+                <MapContainer
+                  center={[20.5937, 78.9629]}
+                  zoom={4}
+                  style={{ height: '100%', width: '100%', zIndex: 0 }}
+                >
+                  <TileLayer
+                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                  />
+                  {incidents.map((incident) => {
+                    const coords = getCoords(incident);
+                    if (!coords) return null;
+                    return (
+                      <Marker
+                        key={incident.id}
+                        position={coords}
+                        icon={createIcon('#dc2626', '🚨')}
+                      >
+                        <Popup>
+                          <div className="p-2">
+                            <h3 className="font-bold text-red-600">{incident.title}</h3>
+                            <p className="text-sm">{incident.description}</p>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    );
+                  })}
+                </MapContainer>
               </div>
             </CardContent>
           </Card>
