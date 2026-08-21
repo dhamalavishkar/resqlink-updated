@@ -32,10 +32,10 @@ ResQLink is an Emergency Intelligence Platform / Disaster Response Decision Supp
 ## Key Features
 
 - Real-time disaster map with hazard overlays
-- AI-powered object detection (YOLOv8) for survivor/fire/damage detection
+- AI-powered object detection (Gemini Pro Vision) for survivor/fire/damage detection
 - Configurable risk scoring engine with explainable outputs
 - Peer-to-peer mesh network with store-and-forward capabilities
-- AI-generated situation briefings using LLMs
+- AI-generated situation briefings using Gemini LLM
 - Resource allocation and route recommendation system
 - Offline-first architecture with IndexedDB and service workers
 - Supabase backend for data persistence and synchronization
@@ -46,9 +46,8 @@ ResQLink is an Emergency Intelligence Platform / Disaster Response Decision Supp
 - **Frontend**: React 19+, TypeScript, Vite, Tailwind CSS, Leaflet/React Leaflet
 - **Backend**: Python 3.11+, FastAPI, Uvicorn, Pydantic, Supabase Python client
 - **Streamlit**: Optional AI/model testing dashboard
-- **Database**: Supabase PostgreSQL with Auth and Storage
-- **Computer Vision**: Ultralytics YOLOv8, OpenCV, Pillow, NumPy
-- **GenAI**: Provider abstraction (Gemini/OpenAI-compatible) with mock provider
+- **Database**: Supabase PostgreSQL (with persistent in-memory fallbacks for demo stability)
+- **Computer Vision & GenAI**: Google Gemini Pro Vision API
 - **Maps**: OpenStreetMap tiles via Leaflet
 - **Offline Communication**: WebRTC RTCPeerConnection, IndexedDB, store-and-forward logic
 - **Testing**: Vitest, React Testing Library (frontend); Pytest (backend)
@@ -109,10 +108,8 @@ Run the demo simulation: `python scripts/run_demo.py`
 
 ## Limitations
 
-- WebRTC requires a signaling mechanism for peer connection (implemented via demo room codes)
-- Computer vision uses base YOLOv8 model; disaster-specific detection requires custom training
-- Offline mesh is simulated in browser tabs/devices for demonstration
-- AI briefings use mock provider when API keys are unavailable
+- WebRTC requires a signaling mechanism for peer connection (implemented via a centralized Node/Python signaling server)
+- Offline mesh requires both devices to have loaded the web app into cache prior to losing internet.
 
 ## Safety Disclaimer
 

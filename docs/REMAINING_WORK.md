@@ -1,23 +1,17 @@
-# ResQLink Remaining Work
+# ResQLink Future Roadmap & Remaining Work
 
-## P0 (Mandatory for Hackathon Demo)
-- **Supabase Integration & Database**: Set up the real Supabase connection. Create a basic schema for `incidents`, `reports`, `zones`, and `mesh_messages` to replace in-memory storage.
-- **End-to-End Data Flow**: Connect frontend React queries to the backend FastAPI (or directly to Supabase where appropriate) so that the Dashboard, Map, and Risk Engine use real data.
-- **AI Vision Integration**: Ensure the YOLOv8 pipeline actually processes images (or fallback gracefully to a robust demo mode if weights/camera fail).
-- **Risk Engine Wiring**: Ensure incident reports and AI detections feed into the risk engine and recalculate zone risks dynamically.
-- **RescueMesh & Offline Flow**: 
-  - Implement a real IndexedDB outbox queue in the frontend.
-  - Implement a basic WebRTC (or polling-based) store-and-forward demo that actually caches messages when offline and syncs them when online.
-- **AI Briefing**: Connect the AI briefing endpoint to a mock AI provider (or real OpenAI compatible provider) to generate reports based on actual current state, not mock strings.
-- **Demo Mode / Simulation Tool**: Create a "Run Emergency Simulation" button that artificially injects a sequence of events (reports -> AI detections -> internet failure) into the real application state to drive the demo smoothly.
+The core ResQLink MVP is now complete and fully functional for demonstration. The following items represent future enhancements for a production-ready V2 release.
 
-## P1 (Important)
-- **Fix Frontend Tests**: Repair the 70 failing tests (e.g., missing `Clock` import in `RescueOperationsPage.tsx`, broken DOM queries).
-- **Backend Tests**: Fix the Python environment setup script and get `pytest` running and passing for core risk/mesh logic.
-- **Route Recommendations & Resource Allocation**: Connect the UI to the backend routing endpoints (even if using simulated/demo routing logic).
-- **Documentation Updates**: Ensure `README.md`, `ARCHITECTURE.md`, `API.md` accurately reflect what is built.
+## P1 (Production Readiness)
+- **Native Mobile Apps (React Native / Flutter)**: The Rescue Mesh currently relies on web technologies (WebRTC/localStorage). For true disconnected peer-to-peer data transfer in a real disaster (where no signaling server exists), a native mobile app is required to utilize Bluetooth Low Energy (BLE) and Wi-Fi Direct APIs.
+- **Robust Authentication & Roles**: Implement Supabase Auth to securely distinguish between Admins, First Responders, and Citizens, restricting who can verify incidents and dispatch teams.
+- **Production Database Migration**: Move entirely away from the in-memory fallback mechanisms (currently used for demo stability) and rely strictly on Supabase with robust Row Level Security (RLS) policies and offline syncing (e.g., using WatermelonDB).
 
-## P2 (Optional Polish)
-- Advanced map animations.
-- Real peer-to-peer WebRTC signaling via Supabase Realtime or similar.
-- Visual polish on empty/error states.
+## P2 (Advanced Features)
+- **Drone Video Streams**: Enhance the AI Vision component to accept and process live RTSP video feeds from reconnaissance drones, rather than just static image uploads.
+- **Advanced Route Optimization**: Integrate a real routing engine (like OSRM or Mapbox) that dynamically recalculates pathing for rescue vehicles based on real-time flood waters or blocked roads reported on the Live Map.
+- **Push Notifications**: Integrate Firebase Cloud Messaging (FCM) or Apple Push Notification service (APNs) to alert off-duty responders immediately when a critical incident is verified in their sector.
+
+## P3 (Maintenance & Code Health)
+- **Test Suite Overhaul**: The UI has undergone a massive premium redesign. The existing test suite needs to be updated to match the new component structures (e.g., the new HTML tables, custom buttons, and glassmorphic layouts).
+- **Internationalization (i18n)**: Fully populate the `react-i18next` translation files to support multiple regional languages common in disaster-prone areas (e.g., Hindi, Bengali, Spanish).
