@@ -37,7 +37,9 @@ async def analyze_field_media(
 
         # Construct a dynamic prompt based on disaster type
         prompt = f"""
-You are an expert AI emergency logistics planner. The user has uploaded an image/video from a {disaster_type} disaster zone.
+You are an expert AI emergency logistics planner analyzing an image from a {disaster_type} disaster zone.
+IMPORTANT: The user has EXPLICITLY identified this incident as a **{disaster_type}**. You MUST categorize and analyze this strictly as a {disaster_type}, even if the visual evidence is ambiguous.
+
 Please analyze the media and return ONLY a valid JSON object with the following structure (no markdown blocks, just raw JSON):
 {{
   "people_count": <integer, estimate how many people are visible/stuck>,
@@ -46,14 +48,13 @@ Please analyze the media and return ONLY a valid JSON object with the following 
   "emergency_equipment": ["list", "of", "specific", "equipment"],
   "survival_advice": "Brief, actionable advice to broadcast back to the victims to keep them safe until rescue arrives based strictly on the {disaster_type} context.",
   "severity": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
-  "incident_title": "A short, descriptive title for this incident"
+  "incident_title": "A short, descriptive title for this {disaster_type} incident"
 }}
 
-CRITICAL INSTRUCTION: The suggested `emergency_equipment` MUST be highly specific to the `{disaster_type}`. 
-- For an EARTHQUAKE: Do NOT suggest life boats, life jackets, or water rescue gear. Suggest heavy lifting equipment, concrete cutters, seismic sensors, etc.
-- For a FLOOD: Suggest life jackets, rescue boats, hovercrafts, etc.
-- For a FIRE: Suggest fire blankets, oxygen masks, extinguishers, etc.
-Do not provide generic equipment that doesn't fit the {disaster_type}.
+CRITICAL INSTRUCTION: The suggested `emergency_equipment` MUST be highly specific to a `{disaster_type}`. 
+- For an EARTHQUAKE: Suggest heavy lifting equipment, concrete cutters, seismic sensors, etc.
+- For a FLOOD: Suggest life jackets, rescue boats, hovercrafts, sandbags, water pumps, etc.
+- For a FIRE: Suggest fire blankets, oxygen masks, extinguishers, fire retardant, etc.
 
 User's description (if any): {description}
 """
@@ -81,7 +82,7 @@ User's description (if any): {description}
         incident_id = f"inc-{uuid.uuid4().hex[:8]}"
         incident_data = {
             "id": incident_id,
-            "title": analysis_data.get("incident_title", f"Field Report: {disaster_type.title()}"),
+            "title": f"Field Report: {disaster_type.title()}",
             "description": f"AI Logistics Report: {json.dumps(analysis_data, indent=2)}",
             "severity": analysis_data.get("severity", "HIGH"),
             "location_lat": latitude,

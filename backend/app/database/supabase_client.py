@@ -15,6 +15,7 @@ class SupabaseService:
         """Initialize the Supabase client."""
         self.supabase: Optional[Client] = None
         self.is_connected = False
+        self.demo_incidents = []
         self._initialize_client()
 
     def _initialize_client(self):
@@ -189,15 +190,16 @@ class SupabaseService:
     # Demo data methods (used when Supabase is not available)
     def _get_demo_incidents(self) -> List[Dict[str, Any]]:
         """Return demo incident data."""
-        return []
+        return self.demo_incidents
 
     def _get_demo_incident(self, incident_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo incident with provided data."""
         incident_data.update({
-            "id": f"demo-{len(self._get_demo_incidents()) + 1}",
+            "id": f"demo-{len(self.demo_incidents) + 1}",
             "created_at": "2026-08-19T14:30:00Z",
             "updated_at": "2026-08-19T14:30:00Z"
         })
+        self.demo_incidents.append(incident_data)
         return incident_data
 
     def _get_demo_reports(self) -> List[Dict[str, Any]]:
@@ -264,10 +266,11 @@ class SupabaseService:
         })
         return briefing_data
 
-# Global instance
-supabase_service = SupabaseService()
+# Global singleton instance
+_supabase_service_instance = None
 
-# Dependency for FastAPI
-def get_supabase() -> SupabaseService:
-    """Dependency to get Supabase service."""
-    return supabase_service
+def get_supabase():
+    global _supabase_service_instance
+    if _supabase_service_instance is None:
+        _supabase_service_instance = SupabaseService()
+    return _supabase_service_instance
