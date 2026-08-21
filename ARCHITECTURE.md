@@ -57,7 +57,3 @@ ResQLink is built around four pillars: SEE, CONNECT, THINK, and ACT. The system 
 - CONNECT: WebRTC Mesh Network (Offline Sync)
 - THINK: Risk Scoring Engine & AI Briefings
 - ACT: Resource Allocation & Graph Routing Engine (networkx)
-
-## Diagrams
-
-(To be added)
