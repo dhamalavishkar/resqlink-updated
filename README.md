@@ -70,7 +70,7 @@ ResQLink is an Emergency Intelligence Platform / Disaster Response Decision Supp
 
 ## Installation
 
-See [INSTALLATION.md](INSTALLATION.md) for detailed setup instructions.
+See the **Running Locally** section below for detailed setup instructions.
 
 ## Running Locally
 
@@ -101,10 +101,9 @@ Run the demo simulation: `python scripts/run_demo.py`
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture details
-- [OFFLINE_MESH.md](OFFLINE_MESH.md) - Mesh communication explanation
-- [AI_PIPELINE.md](AI_PIPELINE.md) - AI and computer vision pipeline
-- [DATABASE.md](DATABASE.md) - Database schema and relationships
-- [API.md](API.md) - Backend API documentation
+- [docs/OFFLINE_MESH.md](docs/OFFLINE_MESH.md) - Mesh communication explanation
+- [docs/AI_PIPELINE.md](docs/AI_PIPELINE.md) - AI and computer vision pipeline
+- [docs/DATABASE.md](docs/DATABASE.md) - Database schema and relationships
 
 ## Limitations
 
