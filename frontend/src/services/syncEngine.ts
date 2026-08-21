@@ -13,7 +13,14 @@ class SyncEngine {
   private syncInProgress = false;
 
   // WebRTC properties
-  public peerId: string = uuidv4();
+  public peerId: string = (() => {
+    let id = localStorage.getItem('mesh_peer_id');
+    if (!id) {
+      id = uuidv4();
+      localStorage.setItem('mesh_peer_id', id);
+    }
+    return id;
+  })();
   private signalingSocket: WebSocket | null = null;
   private peerConnections: Map<string, RTCPeerConnection> = new Map();
   private dataChannels: Map<string, RTCDataChannel> = new Map();
@@ -45,7 +52,12 @@ class SyncEngine {
 
   // WebRTC Signaling and Connection Setup
   public connectSignaling() {
-    if (this.signalingSocket?.readyState === WebSocket.OPEN) return;
+    if (
+      this.signalingSocket?.readyState === WebSocket.OPEN ||
+      this.signalingSocket?.readyState === WebSocket.CONNECTING
+    ) {
+      return;
+    }
     
     this.signalingSocket = new WebSocket(`${WS_URL}/${this.peerId}`);
     
@@ -70,7 +82,9 @@ class SyncEngine {
           // Wait for the new peer to initiate, or we can initiate
           break;
         case 'peer-left':
-          this.handlePeerLeft(message.peer_id);
+          // DO NOT close WebRTC connections just because signaling server lost them!
+          // WebRTC P2P connections survive even if the internet/signaling goes down.
+          console.log('Peer left signaling server, but P2P WebRTC may still be active:', message.peer_id);
           break;
         case 'offer':
           await this.handleOffer(message.sender, message.offer);

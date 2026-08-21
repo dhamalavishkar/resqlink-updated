@@ -53,6 +53,14 @@ function LocationPicker({ onLocationSelect }: { onLocationSelect: (lat: number, 
   return null;
 }
 
+function MapUpdater({ center }: { center: [number, number] }) {
+  const map = useMapEvents({});
+  useEffect(() => {
+    map.flyTo(center, map.getZoom());
+  }, [center, map]);
+  return null;
+}
+
 export const LiveMapPage = () => {
   const [layers, setLayers] = useState({
     zones: true,
@@ -104,7 +112,9 @@ export const LiveMapPage = () => {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 5000);
+    const interval = setInterval(() => {
+      fetchData();
+    }, 3000); // Poll every 3 seconds for the demo
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -176,7 +186,28 @@ export const LiveMapPage = () => {
           file, coordinates.lat, coordinates.lng, disasterType, description,
         );
         setUploadResult(response.analysis);
-        if (coordinates) setCenter([coordinates.lat, coordinates.lng]);
+
+        // Optimistically add incident to map immediately without waiting for next poll
+        if (response.incident) {
+          const newIncident: Incident = {
+            id: response.incident.id || `local-${Date.now()}`,
+            title: response.incident.title || `${disasterType} Emergency`,
+            description: response.incident.description || '',
+            severity: response.incident.severity || 'HIGH',
+            location_lat: coordinates.lat,
+            location_lng: coordinates.lng,
+            status: 'OPEN',
+            created_at: new Date().toISOString(),
+          };
+          setIncidents(prev => {
+            // Avoid duplicates
+            const exists = prev.some(i => i.id === newIncident.id);
+            return exists ? prev : [newIncident, ...prev];
+          });
+        }
+
+        // Pan map to location
+        setCenter([coordinates.lat, coordinates.lng]);
       } else {
         const response = await api.analyzeImage(
           file,
@@ -186,6 +217,7 @@ export const LiveMapPage = () => {
         setVisionDetections(response.detections || []);
         if (coordinates) setCenter([coordinates.lat, coordinates.lng]);
       }
+      // Also refresh from backend to stay in sync
       await fetchData();
     } catch (err: any) {
       setUploadError(err.message || 'Upload failed');
@@ -207,8 +239,8 @@ export const LiveMapPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Live Incident Map</h2>
-          <p className="text-sm text-gray-500">Real-time disaster zones, AI detections, and field evidence</p>
+          <h2 className="text-xl font-bold text-[var(--color-text)]">Live Incident Map</h2>
+          <p className="text-sm text-[var(--color-secondary)]">Real-time disaster zones, AI detections, and field evidence</p>
         </div>
         <Button
           variant="outline"
@@ -216,6 +248,7 @@ export const LiveMapPage = () => {
           onClick={() => {
             setCenter([20.5937, 78.9629]);
           }}
+          className="hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/50%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
         >
           Reset View
         </Button>
@@ -224,18 +257,19 @@ export const LiveMapPage = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         {/* Map — centerpiece */}
         <div className="xl:col-span-2 space-y-4">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Map Controls</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold text-base">Map Controls</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="flex flex-wrap gap-4 p-3 bg-gray-50 rounded-md">
+              <div className="flex flex-wrap gap-4 p-3 bg-[var(--color-background)/50%] rounded-md">
                 {(['zones', 'survivors', 'fires', 'damage', 'reports', 'resources'] as const).map(key => (
-                  <label key={key} className="flex items-center space-x-2 text-sm font-medium text-gray-700 capitalize">
+                  <label key={key} className="flex items-center space-x-2 text-sm font-medium text-[var(--color-text)] capitalize">
                     <input
                       type="checkbox"
                       checked={layers[key]}
                       onChange={(e) => setLayers(prev => ({ ...prev, [key]: e.target.checked }))}
+                      className="text-[var(--color-primary)] hover-shadow transition-all duration-200"
                     />
                     {key === 'reports' ? 'Incidents' : key}
                   </label>
@@ -244,7 +278,7 @@ export const LiveMapPage = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardContent className="p-0">
               <div style={{ height: '520px' }}>
                 <MapContainer
@@ -253,6 +287,7 @@ export const LiveMapPage = () => {
                   scrollWheelZoom
                   style={{ height: '100%', width: '100%' }}
                 >
+                  <MapUpdater center={center} />
                   <TileLayer
                     attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -374,10 +409,10 @@ export const LiveMapPage = () => {
 
         {/* Unified Upload Evidence panel */}
         <div className="space-y-4">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center">
-                <Camera className="w-4 h-4 mr-2 text-blue-600" />
+              <CardTitle className="text-[var(--color-text)] font-semibold text-base flex items-center">
+                <Camera className="w-4 h-4 mr-2 text-[var(--color-primary)]" />
                 Upload Evidence
               </CardTitle>
             </CardHeader>
@@ -385,14 +420,14 @@ export const LiveMapPage = () => {
               <div className="flex rounded-md border mb-4 overflow-hidden">
                 <button
                   type="button"
-                  className={`flex-1 py-2 text-sm font-medium ${uploadMode === 'field' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-700'}`}
+                  className={`flex-1 py-2 text-sm font-medium transition-all duration-200 ${uploadMode === 'field' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
                   onClick={() => setUploadMode('field')}
                 >
                   Field Report
                 </button>
                 <button
                   type="button"
-                  className={`flex-1 py-2 text-sm font-medium ${uploadMode === 'vision' ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-700'}`}
+                  className={`flex-1 py-2 text-sm font-medium transition-all duration-200 ${uploadMode === 'vision' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
                   onClick={() => setUploadMode('vision')}
                 >
                   AI Vision
@@ -402,9 +437,9 @@ export const LiveMapPage = () => {
               <form onSubmit={handleUpload} className="space-y-3">
                 {uploadMode === 'field' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Disaster Type</label>
+                    <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Disaster Type</label>
                     <select
-                      className="w-full rounded-md border border-gray-300 p-2 text-sm"
+                      className="w-full rounded-md border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] p-2 text-sm backdrop-blur-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
                       value={disasterType}
                       onChange={(e) => setDisasterType(e.target.value)}
                     >
@@ -419,9 +454,9 @@ export const LiveMapPage = () => {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Media</label>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Media</label>
                   <div
-                    className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${preview ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}`}
+                    className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer ${preview ? 'border-[var(--color-primary)] bg-[var(--color-primary)/10%]' : 'border-[var(--color-border)/30%] hover:bg-[var(--color-background)/50%]'}`}
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {preview ? (
@@ -432,8 +467,8 @@ export const LiveMapPage = () => {
                       )
                     ) : (
                       <div className="py-2">
-                        <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                        <p className="text-xs text-gray-500 mt-1">Image or video</p>
+                        <Upload className="mx-auto h-8 w-8 text-[var(--color-secondary)]" />
+                        <p className="text-xs text-[var(--color-secondary)] mt-1">Image or video</p>
                       </div>
                     )}
                     <input
@@ -447,21 +482,21 @@ export const LiveMapPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-[var(--color-text)]">
                     Location {uploadMode === 'field' ? '(required)' : '(optional)'}
                   </label>
                   <div className="flex space-x-2">
-                    <Button type="button" variant="outline" size="sm" onClick={getLocationFromGPS} disabled={isLocating} className="flex-1">
-                      {isLocating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Navigation className="w-3 h-3 mr-1" />}
+                    <Button type="button" variant="outline" size="sm" onClick={getLocationFromGPS} disabled={isLocating} className="flex-1 hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]">
+                      {isLocating ? <Loader2 className="w-3 h-3 animate-spin text-[var(--color-primary)]" /> : <Navigation className="w-3 h-3 mr-1 text-[var(--color-secondary)]" />}
                       GPS
                     </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setShowMiniMap(!showMiniMap)} className="flex-1">
-                      <MapPin className="w-3 h-3 mr-1" />
+                    <Button type="button" variant="outline" size="sm" onClick={() => setShowMiniMap(!showMiniMap)} className="flex-1 hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]">
+                      <MapPin className="w-3 h-3 mr-1 text-[var(--color-secondary)]" />
                       Map
                     </Button>
                   </div>
                   {coordinates && (
-                    <p className="text-xs text-green-600 flex items-center">
+                    <p className="text-xs text-[var(--color-accent-green)] flex items-center">
                       <CheckCircle2 className="w-3 h-3 mr-1" />
                       {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
                     </p>
@@ -485,7 +520,7 @@ export const LiveMapPage = () => {
 
                 {uploadMode === 'field' && (
                   <textarea
-                    className="w-full rounded-md border border-gray-300 p-2 text-sm"
+                    className="w-full rounded-md border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] p-2 text-sm backdrop-blur-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
                     rows={2}
                     placeholder="Additional context (optional)"
                     value={description}
@@ -494,30 +529,30 @@ export const LiveMapPage = () => {
                 )}
 
                 {uploadError && (
-                  <div className="p-2 bg-red-50 text-red-700 rounded text-xs flex items-start">
-                    <AlertTriangle className="w-3 h-3 mr-1 mt-0.5 flex-shrink-0" />
+                  <div className="p-2 bg-[var(--color-accent-red)/10%] text-[var(--color-accent-red)] rounded text-xs flex items-start">
+                    <AlertTriangle className="w-3 h-3 mr-1 mt-0.5 text-[var(--color-accent-red)] flex-shrink-0" />
                     {uploadError}
                   </div>
                 )}
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full hover-shadow transition-all duration-200"
                   disabled={isSubmitting || !file || (uploadMode === 'field' && !coordinates)}
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin text-[var(--color-primary)]" />
                       Analyzing...
                     </>
                   ) : uploadMode === 'field' ? (
                     <>
-                      <Upload className="w-4 h-4 mr-2" />
+                      <Upload className="w-4 h-4 mr-2 text-[var(--color-primary)]" />
                       Upload & Analyze Logistics
                     </>
                   ) : (
                     <>
-                      <Eye className="w-4 h-4 mr-2" />
+                      <Eye className="w-4 h-4 mr-2 text-[var(--color-primary)]" />
                       Run AI Vision Detection
                     </>
                   )}
@@ -528,67 +563,67 @@ export const LiveMapPage = () => {
 
           {/* Results */}
           {(uploadResult || visionDetections.length > 0) && (
-            <Card>
+            <Card className="glass shadow-card hover-shadow transition-all duration-200">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">
+                <CardTitle className="text-[var(--color-text)] font-semibold text-sm">
                   {uploadMode === 'field' ? 'Logistics Analysis' : 'Vision Detections'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm space-y-2">
                 {uploadResult && (
                   <>
-                    <p className="font-semibold">{uploadResult.incident_title}</p>
-                    <span className="inline-block px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded font-bold">
+                    <p className="font-semibold text-[var(--color-text)]">{uploadResult.incident_title}</p>
+                    <span className="inline-block px-2 py-0.5 bg-[var(--color-accent-red)/20%] text-[var(--color-accent-red)] text-xs rounded font-bold">
                       {uploadResult.severity}
                     </span>
-                    <p className="text-gray-600">{uploadResult.people_count} people · {uploadResult.food_needed_kg}kg food · {uploadResult.water_needed_liters}L water</p>
-                    <p className="text-xs italic text-gray-500">Map refreshed with new incident.</p>
+                    <p className="text-[var(--color-text)] text-gray-600">{uploadResult.people_count} people · {uploadResult.food_needed_kg}kg food · {uploadResult.water_needed_liters}L water</p>
+                    <p className="text-xs italic text-[var(--color-secondary)]">Map refreshed with new incident.</p>
                   </>
                 )}
                 {visionDetections.length > 0 && (
                   <div className="space-y-1">
                     {visionDetections.map((d: any, i: number) => (
                       <div key={d.id ?? i} className="flex items-center space-x-2 text-xs">
-                        {d.class === 'person' ? <Users className="w-3 h-3 text-green-600" /> : <Activity className="w-3 h-3 text-red-600" />}
-                        <span className="uppercase font-medium">{d.class}</span>
-                        <span className="text-gray-400">{((d.confidence ?? 0) * 100).toFixed(0)}%</span>
+                        {d.class === 'person' ? <Users className="w-3 h-3 text-[var(--color-accent-green)]" /> : <Activity className="w-3 h-3 text-[var(--color-accent-red)]" />}
+                        <span className="uppercase font-medium text-[var(--color-text)]">{d.class}</span>
+                        <span className="text-[var(--color-secondary)]">{((d.confidence ?? 0) * 100).toFixed(0)}%</span>
                       </div>
                     ))}
-                    <p className="text-xs italic text-gray-500 pt-1">Detections plotted on map.</p>
+                    <p className="text-xs italic text-[var(--color-secondary)] pt-1">Detections plotted on map.</p>
                   </div>
                 )}
               </CardContent>
             </Card>
           )}
 
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Selected Zone</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold text-base">Selected Zone</CardTitle>
             </CardHeader>
             <CardContent>
               {selectedZone ? (
                 <div className="space-y-2 text-sm">
-                  <h4 className="font-medium">{selectedZone.name}</h4>
-                  <p className="text-gray-500">Risk: {selectedZone.risk_score} ({selectedZone.severity})</p>
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
-                    <Users className="w-3 h-3 text-green-500" /> {selectedZone.survivors} survivors
+                  <h4 className="font-medium text-[var(--color-text)]">{selectedZone.name}</h4>
+                  <p className="text-[var(--color-secondary)]">Risk: {selectedZone.risk_score} ({selectedZone.severity})</p>
+                  <div className="flex items-center space-x-2 text-xs text-[var(--color-secondary)]">
+                    <Users className="w-3 h-3 text-[var(--color-accent-green)]" /> {selectedZone.survivors} survivors
                   </div>
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
-                    <Activity className="w-3 h-3 text-red-500" /> {selectedZone.fires} fires
+                  <div className="flex items-center space-x-2 text-xs text-[var(--color-secondary)]">
+                    <Activity className="w-3 h-3 text-[var(--color-accent-red)]" /> {selectedZone.fires} fires
                   </div>
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
-                    <AlertTriangle className="w-3 h-3 text-orange-500" /> {selectedZone.damage} damage
+                  <div className="flex items-center space-x-2 text-xs text-[var(--color-secondary)]">
+                    <AlertTriangle className="w-3 h-3 text-[var(--color-accent-orange)]" /> {selectedZone.damage} damage
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">Click a danger zone on the map.</p>
+                <p className="text-[var(--color-secondary)] text-sm">Click a danger zone on the map.</p>
               )}
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Legend</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold text-base">Legend</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-xs">
               <div className="flex items-center space-x-2"><span>🟣</span> Danger zones</div>

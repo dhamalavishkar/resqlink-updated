@@ -54,7 +54,7 @@ export const AIVisionPage = () => {
 
   const handleAnalyze = async () => {
     setIsProcessing(true);
-    
+
     if (imageFile) {
       try {
         const result = await api.analyzeImage(imageFile);
@@ -81,20 +81,21 @@ export const AIVisionPage = () => {
         ]);
       }
     }
-    
+
     setIsProcessing(false);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">AI Vision Analysis</h2>
+        <h2 className="text-xl font-bold text-[var(--color-text)]">AI Vision Analysis</h2>
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
             size="sm"
             onClick={handleSampleClick}
             disabled={isProcessing}
+            className="hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
           >
             Load Sample
           </Button>
@@ -103,6 +104,7 @@ export const AIVisionPage = () => {
             size="sm"
             onClick={handleAnalyze}
             disabled={isProcessing || (!imageSrc && !videoSrc)}
+            className="hover-shadow transition-all duration-200 text-[var(--color-background)] bg-[var(--color-primary)] hover:bg-[var(--color-primary)/90]"
           >
             {isProcessing ? 'Analyzing...' : 'Analyze'}
           </Button>
@@ -113,7 +115,7 @@ export const AIVisionPage = () => {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Media Upload</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Media Upload</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
@@ -123,6 +125,7 @@ export const AIVisionPage = () => {
                     size="sm"
                     onClick={() => document.getElementById('image-upload')?.click()}
                     disabled={isProcessing}
+                    className="flex-1 hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
                   >
                     Upload Image
                   </Button>
@@ -131,6 +134,7 @@ export const AIVisionPage = () => {
                     size="sm"
                     onClick={() => document.getElementById('video-upload')?.click()}
                     disabled={isProcessing}
+                    className="flex-1 hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
                   >
                     Upload Video
                   </Button>
@@ -150,20 +154,20 @@ export const AIVisionPage = () => {
                   onChange={handleVideoChange}
                 />
               </div>
-              <div className="h-96 bg-gray-200 flex items-center justify-center relative overflow-hidden">
+              <div className="h-96 bg-[var(--color-background)/20%] flex items-center justify-center relative overflow-hidden">
                 {isImageUpload && imageSrc ? (
                   <img src={imageSrc} alt="Uploaded" className="max-w-full max-h-full object-contain" />
                 ) : !isImageUpload && videoSrc ? (
                   <video src={videoSrc} alt="Uploaded" className="max-w-full max-h-full object-contain" controls />
                 ) : (
                   <div className="text-center">
-                    <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">No media selected</p>
+                    <Upload className="h-8 w-8 text-[var(--color-secondary)]" />
+                    <p className="text-[var(--color-secondary)] text-sm">No media selected</p>
                   </div>
                 )}
                 {isProcessing && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="text-white text-lg">
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <div className="text-[var(--color-background)] text-lg">
                       Analyzing...
                     </div>
                   </div>
@@ -176,35 +180,35 @@ export const AIVisionPage = () => {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Detection Results</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Detection Results</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {isProcessing ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full border-4 border-blue-500 border-t-transparent h-8 w-8 mx-auto" />
-                  <p className="mt-2 text-sm text-gray-500">Processing analysis...</p>
+                  <div className="animate-spin rounded-full border-4 border-[var(--color-primary)] border-t-transparent h-8 w-8 mx-auto" />
+                  <p className="mt-2 text-[var(--color-text)]/60 text-sm">Processing analysis...</p>
                 </div>
               ) : detections.length > 0 ? (
                 <>
                   <div className="space-y-3">
                     {detections.map((det, index) => (
-                      <div key={index} className="p-3 bg-gray-50 rounded-md">
+                      <div key={index} className="p-3 bg-[var(--color-background)/50%] rounded-md">
                         <div className="flex items-start space-x-3">
                           <div className="flex-shrink-0">
                             {det.class === 'person' ? (
-                              <Users className="h-4 w-4 text-green-500" />
+                              <Users className="h-4 w-4 text-[var(--color-accent-green)]" />
                             ) : det.class === 'fire' ? (
-                              <Activity className="h-4 w-4 text-red-500" />
+                              <Activity className="h-4 w-4 text-[var(--color-accent-red)]" />
                             ) : (
-                              <AlertTriangle className="h-4 w-4 text-orange-500" />
+                              <AlertTriangle className="h-4 w-4 text-[var(--color-accent-yellow)]" />
                             )}
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-900">{det.class.toUpperCase()}</h4>
-                            <p className="text-sm text-gray-500">
+                            <h4 className="font-medium text-[var(--color-text)]">{det.class.toUpperCase()}</h4>
+                            <p className="text-[var(--color-text)]/60 text-sm">
                               Confidence: {(det.confidence * 100).toFixed(0)}%
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-[var(--color-text)]/50 text-xs">
                               BBox: [{det.bbox[0]}, {det.bbox[1]}, {det.bbox[2]}, {det.bbox[3]}]
                             </p>
                           </div>
@@ -212,14 +216,14 @@ export const AIVisionPage = () => {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <Button variant="outline" size="sm" className="w-full hover-shadow transition-all duration-200 text-[var(--color-primary)] border-[var(--color-primary)] hover:bg-[var(--color-primary)/10%]">
                     Export Results
                   </Button>
                 </>
               ) : (
                 <div className="text-center py-8">
-                  <CheckCircle2 className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">No detections yet. Upload media and click Analyze.</p>
+                  <CheckCircle2 className="h-6 w-6 text-[var(--color-accent-green)]" />
+                  <p className="text-[var(--color-text)]/60 text-sm">No detections yet. Upload media and click Analyze.</p>
                 </div>
               )}
             </CardContent>
@@ -227,30 +231,30 @@ export const AIVisionPage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Detection Summary</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Detection Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {isProcessing ? (
                 <div className="text-center py-4">
-                  <div className="animate-spin rounded-full border-2 border-blue-500 border-t-transparent h-5 w-5 mx-auto" />
+                  <div className="animate-spin rounded-full border-2 border-[var(--color-primary)] border-t-transparent h-5 w-5 mx-auto" />
                 </div>
               ) : detections.length > 0 ? (
                 <>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Users className="h-4 w-4 text-green-500" />
-                    <span className="font-medium">{detections.filter(d => d.class === 'person').length} persons</span>
+                  <div className="flex items-center space-x-2 text-[var(--color-text)]/60 text-sm">
+                    <Users className="h-4 w-4 text-[var(--color-accent-green)]" />
+                    <span className="font-medium text-[var(--color-text)]">{detections.filter(d => d.class === 'person').length} persons</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <Activity className="h-4 w-4 text-red-500" />
-                    <span className="font-medium">{detections.filter(d => d.class === 'fire').length} fires</span>
+                  <div className="flex items-center space-x-2 text-[var(--color-text)]/60 text-sm">
+                    <Activity className="h-4 w-4 text-[var(--color-accent-red)]" />
+                    <span className="font-medium text-[var(--color-text)]">{detections.filter(d => d.class === 'fire').length} fires</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
-                    <span className="font-medium">{detections.filter(d => d.class === 'person' || d.class === 'fire').length === 0 ? 0 : detections.length - detections.filter(d => d.class === 'person').length - detections.filter(d => d.class === 'fire').length} other</span>
+                  <div className="flex items-center space-x-2 text-[var(--color-text)]/60 text-sm">
+                    <AlertTriangle className="h-4 w-4 text-[var(--color-accent-yellow)]" />
+                    <span className="font-medium text-[var(--color-text)]">{detections.filter(d => d.class === 'person' || d.class === 'fire').length === 0 ? 0 : detections.length - detections.filter(d => d.class === 'person').length - detections.filter(d => d.class === 'fire').length} other</span>
                   </div>
                 </>
               ) : (
-                <div className="text-center text-xs text-gray-500">
+                <div className="text-center text-[var(--color-text)]/50 text-xs">
                   No detections
                 </div>
               )}

@@ -15,7 +15,38 @@ class SupabaseService:
         """Initialize the Supabase client."""
         self.supabase: Optional[Client] = None
         self.is_connected = False
-        self.demo_incidents = []
+        self.demo_incidents = [
+            {
+                "id": "seed-001",
+                "title": "Flood Emergency - Mumbai Coast",
+                "description": "Severe flooding reported along the coastal belt. Multiple residential areas submerged.",
+                "severity": "CRITICAL",
+                "location_lat": 19.0760,
+                "location_lng": 72.8777,
+                "status": "OPEN",
+                "created_at": "2026-08-21T08:00:00Z"
+            },
+            {
+                "id": "seed-002",
+                "title": "Earthquake Emergency - Delhi NCR",
+                "description": "Magnitude 5.8 earthquake struck the region. Structural damage reported in multiple districts.",
+                "severity": "HIGH",
+                "location_lat": 28.6139,
+                "location_lng": 77.2090,
+                "status": "OPEN",
+                "created_at": "2026-08-21T09:30:00Z"
+            },
+            {
+                "id": "seed-003",
+                "title": "Fire Emergency - Bengaluru Industrial",
+                "description": "Industrial fire spreading. Evacuation of surrounding neighborhoods underway.",
+                "severity": "HIGH",
+                "location_lat": 12.9716,
+                "location_lng": 77.5946,
+                "status": "OPEN",
+                "created_at": "2026-08-21T10:15:00Z"
+            }
+        ]
         self._initialize_client()
 
     def _initialize_client(self):
@@ -50,26 +81,38 @@ class SupabaseService:
 
     # Incident-related methods
     async def get_incidents(self, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get incidents from the database."""
-        if not self.is_available():
-            return self._get_demo_incidents()
-        try:
-            response = self.supabase.table("incidents").select("*").limit(limit).execute()
-            return response.data
-        except Exception as e:
-            logger.error(f"Error fetching incidents: {e}")
-            return self._get_demo_incidents()
+        """Get incidents - always merges local demo_incidents with Supabase data.
+        This ensures newly uploaded incidents (saved locally) are NEVER wiped by polling.
+        """
+        supabase_incidents = []
+        if self.is_available():
+            try:
+                response = self.supabase.table("incidents").select("*").limit(limit).execute()
+                supabase_incidents = response.data or []
+            except Exception as e:
+                logger.error(f"Error fetching incidents from Supabase: {e}")
+
+        # Merge: local demo_incidents + Supabase, deduplicating by id
+        seen_ids = {i["id"] for i in supabase_incidents}
+        local_only = [i for i in self.demo_incidents if i.get("id") not in seen_ids]
+        merged = supabase_incidents + local_only
+        logger.debug(f"get_incidents: {len(supabase_incidents)} from Supabase + {len(local_only)} local = {len(merged)} total")
+        return merged
 
     async def create_incident(self, incident_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """Create a new incident."""
+        """Create a new incident. Always saves locally so count increments immediately."""
+        # Always save to local demo_incidents first so the live map updates instantly
+        self.demo_incidents.append(incident_data)
+        logger.info(f"Incident saved locally: {incident_data.get('id')} - total: {len(self.demo_incidents)}")
+
         if not self.is_available():
-            return self._get_demo_incident(incident_data)
+            return incident_data
         try:
             response = self.supabase.table("incidents").insert(incident_data).execute()
-            return response.data[0] if response.data else None
+            return response.data[0] if response.data else incident_data
         except Exception as e:
-            logger.error(f"Error creating incident: {e}")
-            return None
+            logger.error(f"Error creating incident in Supabase (saved locally): {e}")
+            return incident_data
 
     # Report-related methods
     async def get_reports(self, limit: int = 100) -> List[Dict[str, Any]]:
@@ -252,18 +295,24 @@ class SupabaseService:
 
     def _get_demo_mesh_message(self, message_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo mesh message with provided data."""
+        if not hasattr(self, 'demo_mesh_messages'):
+            self.demo_mesh_messages = []
         message_data.update({
-            "id": f"demo-msg-{len([]) + 1}",  # Simplified
+            "id": f"demo-msg-{len(self.demo_mesh_messages) + 1}",
             "created_at": "2026-08-19T14:30:00Z"
         })
+        self.demo_mesh_messages.append(message_data)
         return message_data
 
     def _get_demo_briefing(self, briefing_data: Dict[str, Any]) -> Dict[str, Any]:
         """Return a demo briefing with provided data."""
+        if not hasattr(self, 'demo_briefings'):
+            self.demo_briefings = []
         briefing_data.update({
-            "id": f"demo-brief-{len([]) + 1}",  # Simplified
+            "id": f"demo-brief-{len(self.demo_briefings) + 1}",
             "created_at": "2026-08-19T14:30:00Z"
         })
+        self.demo_briefings.append(briefing_data)
         return briefing_data
 
 # Global singleton instance

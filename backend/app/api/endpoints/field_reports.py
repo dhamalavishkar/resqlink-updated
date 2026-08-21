@@ -74,6 +74,7 @@ User's description (if any): {description}
         # Parse JSON
         try:
             analysis_data = json.loads(clean_json)
+            analysis_data["incident_title"] = f"{disaster_type.title()} Emergency"
         except json.JSONDecodeError:
             logger.error(f"Failed to parse AI response as JSON. Raw response: {analysis_result_text}")
             raise HTTPException(status_code=500, detail="AI failed to generate a valid logistics report.")

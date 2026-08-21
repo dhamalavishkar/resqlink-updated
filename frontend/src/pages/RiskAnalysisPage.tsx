@@ -110,9 +110,9 @@ export const RiskAnalysisPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Risk Analysis</h2>
+        <h2 className="text-xl font-bold text-[var(--color-text)]">Risk Analysis</h2>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]">
             Refresh Data
           </Button>
         </div>
@@ -122,12 +122,12 @@ export const RiskAnalysisPage = () => {
         <div className="lg:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Risk Zones</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Risk Zones</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left text-gray-500">
-                  <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                <table className="w-full text-sm text-left text-[var(--color-text)]">
+                  <thead className="text-xs text-[var(--color-text)]/70 uppercase bg-[var(--color-background)/50%]">
                     <tr>
                       <th scope="col" className="px-6 py-3">Zone</th>
                       <th scope="col" className="px-6 py-3">Risk Score</th>
@@ -143,11 +143,11 @@ export const RiskAnalysisPage = () => {
                   </thead>
                   <tbody>
                     {filteredZones.map((zone, index) => (
-                      <tr key={zone.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                      <tr key={zone.id} className={index % 2 === 0 ? 'bg-[var(--color-background)]' : 'bg-[var(--color-background)/50%]'}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-2">
-                            <MapPen className="h-4 w-4 text-gray-400" />
-                            <span className="font-medium">{zone.name}</span>
+                            <MapPin className="h-4 w-4 text-[var(--color-secondary)]" />
+                            <span className="font-medium text-[var(--color-text)]">{zone.name}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -176,7 +176,7 @@ export const RiskAnalysisPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right">{zone.damage}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">{zone.reports}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{zone.priority}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">{zone.lastUpdated}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-[var(--color-text)]/70">{zone.lastUpdated}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -189,13 +189,13 @@ export const RiskAnalysisPage = () => {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Filters</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Filters</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Risk Score Range</span>
+                  <MapPin className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Risk Score Range</span>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-sm">
@@ -204,7 +204,7 @@ export const RiskAnalysisPage = () => {
                       type="number"
                       value={filters.minRisk}
                       onChange={(e) => setFilters(prev => ({ ...prev, minRisk: Math.max(0, Math.min(100, parseInt(e.target.value) || 0))}))}
-                      className="w-16 border border-gray-300 rounded-md px-2 py-1 text-center"
+                      className="w-16 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md px-2 py-1 text-center focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] backdrop-blur-sm"
                       min="0"
                       max="100"
                     />
@@ -213,12 +213,12 @@ export const RiskAnalysisPage = () => {
                       type="number"
                       value={filters.maxRisk}
                       onChange={(e) => setFilters(prev => ({ ...prev, maxRisk: Math.max(0, Math.min(100, parseInt(e.target.value) || 100))}))}
-                      className="w-16 border border-gray-300 rounded-md px-2 py-1 text-center"
+                      className="w-16 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md px-2 py-1 text-center focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] backdrop-blur-sm"
                       min="0"
                       max="100"
                     />
                   </div>
-                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                  <div className="flex items-center space-x-2 text-xs text-[var(--color-text)]/50">
                     0 - 100
                   </div>
                 </div>
@@ -226,13 +226,13 @@ export const RiskAnalysisPage = () => {
 
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <AlertTriangle className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Severity Levels</span>
+                  <AlertTriangle className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Severity Levels</span>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Badge variant="destructive" className="h-3 w-3">
+                      <Badge variant="destructive" className="h-3 w-3 text-[var(--color-background)] bg-[var(--color-accent-red)]">
                         CRITICAL
                       </Badge>
                     </div>
@@ -252,7 +252,7 @@ export const RiskAnalysisPage = () => {
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Badge variant="outline" className="h-3 w-3">
+                      <Badge variant="outline" className="h-3 w-3 text-[var(--color-text)] border border-[var(--color-border)/50%] bg-[var(--color-background)/50%]">
                         HIGH
                       </Badge>
                     </div>
@@ -272,7 +272,7 @@ export const RiskAnalysisPage = () => {
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Badge variant="secondary" className="h-3 w-3">
+                      <Badge variant="secondary" className="h-3 w-3 text-[var(--color-background)] bg-[var(--color-secondary)]">
                         MEDIUM
                       </Badge>
                     </div>
@@ -292,7 +292,7 @@ export const RiskAnalysisPage = () => {
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Badge variant="default" className="h-3 w-3">
+                      <Badge variant="default" className="h-3 w-3 text-[var(--color-background)] bg-[var(--color-primary)]">
                         LOW
                       </Badge>
                     </div>
@@ -312,7 +312,7 @@ export const RiskAnalysisPage = () => {
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Badge variant="destructive" className="h-3 w-3">
+                      <Badge variant="destructive" className="h-3 w-3 text-[var(--color-background)] bg-[var(--color-accent-red)]">
                         SAFE
                       </Badge>
                     </div>
@@ -337,75 +337,75 @@ export const RiskAnalysisPage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Risk Calculation Details</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Risk Calculation Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-3 bg-gray-50 rounded-md">
-                <h4 className="font-medium text-gray-900">Zone A-01 Risk Breakdown</h4>
-                <p className="text-sm text-gray-500 mt-2">
+              <div className="p-3 bg-[var(--color-background)/50%] rounded-md">
+                <h4 className="font-medium text-[var(--color-text)]">Zone A-01 Risk Breakdown</h4>
+                <p className="text-[var(--color-text)]/60 text-sm mt-2">
                   Total Risk Score: 87/100
                 </p>
-                <div className="mt-3 space-y-2 text-xs">
+                <div className="mt-3 space-y-2 text-[var(--color-text)]/60 text-xs">
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Users className="h-4 w-4 text-green-500" />
+                      <Users className="h-4 w-4 text-[var(--color-accent-green)]" />
                     </div>
                     <div>
-                      <span className="font-medium">Survivors Factor:</span> 12 survivors × 3.0 = 36.0
+                      <span className="font-medium text-[var(--color-text)]">Survivors Factor:</span> 12 survivors × 3.0 = 36.0
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Activity className="h-4 w-4 text-red-500" />
+                      <Activity className="h-4 w-4 text-[var(--color-accent-red)]" />
                     </div>
                     <div>
-                      <span className="font-medium">Fire Factor:</span> 1 fire × 20.0 = 20.0
+                      <span className="font-medium text-[var(--color-text)]">Fire Factor:</span> 1 fire × 20.0 = 20.0
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <AlertTriangle className="h-4 w-4 text-orange-500" />
+                      <AlertTriangle className="h-4 w-4 text-[var(--color-accent-yellow)]" />
                     </div>
                     <div>
-                      <span className="font-medium">Damage Factor:</span> 2 damage × 10.0 = 20.0
+                      <span className="font-medium text-[var(--color-text)]">Damage Factor:</span> 2 damage × 10.0 = 20.0
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <ClipboardList className="h-4 w-4 text-blue-500" />
+                      <ClipboardList className="h-4 w-4 text-[var(--color-primary)]" />
                     </div>
                     <div>
-                      <span className="font-medium">Reports Factor:</span> 8 reports × 1.5 = 12.0
+                      <span className="font-medium text-[var(--color-text)]">Reports Factor:</span> 8 reports × 1.5 = 12.0
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <MapPin className="h-4 w-4 text-gray-500" />
+                      <MapPin className="h-4 w-4 text-[var(--color-text)]/50" />
                     </div>
                     <div>
-                      <span className="font-medium">Population Factor:</span> 1200 pop × 0.005 = 6.0
+                      <span className="font-medium text-[var(--color-text)]">Population Factor:</span> 1200 pop × 0.005 = 6.0
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <Zap className="h-4 w-4 text-yellow-500" />
+                      <Zap className="h-4 w-4 text-[var(--color-accent-yellow)]" />
                     </div>
                     <div>
-                      <span className="font-medium">Accessibility Factor:</span> Poor roads × -5.0 = -5.0
+                      <span className="font-medium text-[var(--color-text)]">Accessibility Factor:</span> Poor roads × -5.0 = -5.0
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <ZapOff className="h-4 w-4 text-gray-400" />
+                      <ZapOff className="h-4 w-4 text-[var(--color-text)]/50" />
                     </div>
                     <div>
-                      <span className="font-medium">Recency Factor:</span> 2 min old × 2.0 = 4.0
+                      <span className="font-medium text-[var(--color-text)]">Recency Factor:</span> 2 min old × 2.0 = 4.0
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 pt-3 border-t border-gray-200">
-                  <p className="font-medium text-gray-900">Recommended Action:</p>
-                  <p className="mt-1 text-sm text-gray-600">
+                <div className="mt-4 pt-3 border-t border-[var(--color-border)/30%]">
+                  <p className="font-medium text-[var(--color-text)]">Recommended Action:</p>
+                  <p className="mt-1 text-sm text-[var(--color-text)]/60">
                     Deploy immediate search-and-rescue team and fire response unit.
                   </p>
                 </div>

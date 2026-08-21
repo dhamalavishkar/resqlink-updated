@@ -8,9 +8,9 @@ import { MapPin, Truck, Ambulance, Stethoscope, Flame, HelpingHand, Clock, Activ
 import { api, Resource } from '@/services/api';
 import { useTranslation } from 'react-i18next';
 
-const iconAmbulance = L.divIcon({ html: `<div class="text-blue-500">🚑</div>`, className: '', iconSize: [24, 24] });
-const iconFire = L.divIcon({ html: `<div class="text-red-500">🚒</div>`, className: '', iconSize: [24, 24] });
-const iconDefault = L.divIcon({ html: `<div class="text-gray-500">📍</div>`, className: '', iconSize: [24, 24] });
+const iconAmbulance = L.divIcon({ html: `<div class="text-[var(--color-accent-blue)]">🚑</div>`, className: '', iconSize: [24, 24] });
+const iconFire = L.divIcon({ html: `<div class="text-[var(--color-accent-red)]">🚒</div>`, className: '', iconSize: [24, 24] });
+const iconDefault = L.divIcon({ html: `<div class="text-[var(--color-secondary)]">📍</div>`, className: '', iconSize: [24, 24] });
 
 export const RescueOperationsPage = () => {
   const { t } = useTranslation();
@@ -44,9 +44,9 @@ export const RescueOperationsPage = () => {
       // Mocking a destination based on the resource location (slightly offset)
       const lat = resource.location_lat || 20.5937;
       const lng = resource.location_lng || 78.9629;
-      
+
       const destination = { lat: lat + 0.05, lng: lng + 0.05 };
-      
+
       const routeData = await api.getRouteRecommendation({
         start: { lat, lng },
         end: destination,
@@ -71,12 +71,12 @@ export const RescueOperationsPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">{t('Rescue Operations', 'Rescue Operations')}</h2>
+        <h2 className="text-xl font-bold text-[var(--color-text)]">{t('Rescue Operations', 'Rescue Operations')}</h2>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="sm" onClick={fetchResources}>
+          <Button variant="outline" size="sm" onClick={fetchResources} className="hover-shadow transition-all duration-200">
             Refresh
           </Button>
-          <Button variant="default" size="sm">
+          <Button variant="default" size="sm" className="hover-shadow transition-all duration-200 text-[var(--color-background)] bg-[var(--color-primary)] hover:bg-[var(--color-primary)/90]">
             Manage Resources
           </Button>
         </div>
@@ -87,11 +87,11 @@ export const RescueOperationsPage = () => {
         <div className="lg:col-span-1 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>{t('Filters', 'Filters')}</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">{t('Filters', 'Filters')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="font-medium text-sm text-gray-900 mb-1">{t('Status', 'Status')}</div>
+                <div className="font-medium text-sm text-[var(--color-text)] mb-1">{t('Status', 'Status')}</div>
                 <div className="flex flex-wrap gap-2">
                   {['available', 'deployed', 'maintenance', 'offline'].map(status => (
                     <label key={status} className="flex items-center space-x-2 text-sm">
@@ -104,8 +104,9 @@ export const RescueOperationsPage = () => {
                             : filters.statuses.filter(s => s !== status);
                           setFilters(prev => ({ ...prev, statuses: newList }));
                         }}
+                        className="text-[var(--color-primary)] hover-shadow transition-all duration-200"
                       />
-                      <span className="capitalize">{status}</span>
+                      <span className="capitalize text-[var(--color-text)]">{status}</span>
                     </label>
                   ))}
                 </div>
@@ -115,26 +116,29 @@ export const RescueOperationsPage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('Resources', 'Resources')} ({filteredResources.length})</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">{t('Resources', 'Resources')} ({filteredResources.length})</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="overflow-y-auto h-[600px] divide-y divide-gray-100">
+              <div className="overflow-y-auto h-[600px] divide-y divide-[var(--color-border)/30%]">
                 {filteredResources.map(resource => (
                   <div
                     key={resource.id}
-                    className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${selectedResource?.id === resource.id ? 'bg-blue-50' : ''}`}
+                    className={`p-4 cursor-pointer hover:bg-[var(--color-background)/50%] transition-all duration-200 ${selectedResource?.id === resource.id ? 'bg-[var(--color-primary)/10%]' : ''}`}
                     onClick={() => handleSelectResource(resource)}
                   >
                     <div className="flex items-start justify-between mb-1">
-                      <h4 className="font-medium text-gray-900 text-sm">{resource.name}</h4>
-                      <Badge variant={resource.status === 'available' ? 'secondary' : resource.status === 'deployed' ? 'destructive' : 'outline'} className="text-[10px] uppercase">
+                      <h4 className="font-medium text-[var(--color-text)] text-sm">{resource.name}</h4>
+                      <Badge
+                        variant={resource.status === 'available' ? 'secondary' : resource.status === 'deployed' ? 'destructive' : 'outline'}
+                        className="text-[var(--color-text)]/50 text-[10px] uppercase"
+                      >
                         {resource.status}
                       </Badge>
                     </div>
-                    <div className="text-xs text-gray-500 capitalize mb-2">{resource.type.replace('_', ' ')}</div>
-                    <div className="flex items-center space-x-3 text-xs text-gray-500">
-                      <span className="flex items-center"><MapPin className="h-3 w-3 mr-1" /> {resource.location || 'Unknown'}</span>
-                      {resource.eta && <span className="flex items-center"><Clock className="h-3 w-3 mr-1" /> ETA: {resource.eta}</span>}
+                    <div className="text-[var(--color-secondary)] text-xs capitalize mb-2">{resource.type.replace('_', ' ')}</div>
+                    <div className="flex items-center space-x-3 text-[var(--color-secondary)] text-xs text-gray-500">
+                      <span className="flex items-center"><MapPin className="h-3 w-3 mr-1 text-[var(--color-secondary)]" /> {resource.location || 'Unknown'}</span>
+                      {resource.eta && <span className="flex items-center"><Clock className="h-3 w-3 mr-1 text-[var(--color-secondary)]" /> ETA: {resource.eta}</span>}
                     </div>
                   </div>
                 ))}
@@ -147,18 +151,18 @@ export const RescueOperationsPage = () => {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>{t('Route Map', 'Route Map')}</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">{t('Route Map', 'Route Map')}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div style={{ height: '500px' }} className="w-full bg-gray-100">
+              <div style={{ height: '500px' }} className="w-full">
                 <MapContainer center={[20.5937, 78.9629]} zoom={12} style={{ height: '100%', width: '100%' }}>
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  
+
                   {filteredResources.map(res => (
                     res.location_lat && res.location_lng && (
-                      <Marker 
-                        key={res.id} 
-                        position={[res.location_lat, res.location_lng]} 
+                      <Marker
+                        key={res.id}
+                        position={[res.location_lat, res.location_lng]}
                         icon={res.type === 'ambulance' ? iconAmbulance : res.type === 'fire_truck' ? iconFire : iconDefault}
                       >
                         <Popup>{res.name}</Popup>
@@ -167,11 +171,11 @@ export const RescueOperationsPage = () => {
                   ))}
 
                   {route && route.route.points && (
-                    <Polyline 
-                      positions={route.route.points.map((p: any) => [p.lat, p.lng])} 
-                      color="blue" 
-                      weight={5} 
-                      opacity={0.7} 
+                    <Polyline
+                      positions={route.route.points.map((p: any) => [p.lat, p.lng])}
+                      color="[var(--color-primary)]"
+                      weight={5}
+                      opacity={0.7}
                     />
                   )}
                 </MapContainer>
@@ -182,28 +186,28 @@ export const RescueOperationsPage = () => {
           {selectedResource && (
             <Card>
               <CardHeader>
-                <CardTitle>Routing Details: {selectedResource.name}</CardTitle>
+                <CardTitle className="text-[var(--color-text)] font-semibold">Routing Details: {selectedResource.name}</CardTitle>
               </CardHeader>
               <CardContent>
                 {loadingRoute ? (
-                  <p className="text-sm text-gray-500">Calculating optimal route...</p>
+                  <p className="text-[var(--color-text)]/60 text-sm">Calculating optimal route...</p>
                 ) : route ? (
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-500">{t('Distance', 'Distance')}</p>
-                      <p className="font-semibold">{route.route.distance_km} km</p>
+                      <p className="text-[var(--color-text)]/60 text-sm">{t('Distance', 'Distance')}</p>
+                      <p className="font-semibold text-[var(--color-text)]">{route.route.distance_km} km</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">{t('Estimated Time', 'Estimated Time')}</p>
-                      <p className="font-semibold">{route.route.estimated_time_minutes} mins</p>
+                      <p className="text-[var(--color-text)]/60 text-sm">{t('Estimated Time', 'Estimated Time')}</p>
+                      <p className="font-semibold text-[var(--color-text)]">{route.route.estimated_time_minutes} mins</p>
                     </div>
                     <div className="col-span-2">
-                      <p className="text-sm text-gray-500">{t('Safety Info', 'Safety Info')}</p>
-                      <p className="font-semibold text-sm">{route.safety.explanation}</p>
+                      <p className="text-[var(--color-text)]/60 text-sm">{t('Safety Info', 'Safety Info')}</p>
+                      <p className="font-semibold text-[var(--color-text)] text-sm">{route.safety.explanation}</p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">No route data available.</p>
+                  <p className="text-[var(--color-text)]/60 text-sm">No route data available.</p>
                 )}
               </CardContent>
             </Card>

@@ -64,8 +64,8 @@ export const OverviewPage = () => {
     };
 
     fetchData();
-    // Optional polling for demo
-    const interval = setInterval(fetchData, 5000);
+    // Poll every 3 seconds so newly uploaded incidents reflect immediately
+    const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -97,75 +97,75 @@ export const OverviewPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Overview</h2>
+        <h2 className="text-xl font-bold text-[var(--color-text)]">Overview</h2>
       </div>
-      
+
       <DemoSimulationControls />
-      
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="bg-white rounded-lg shadow border p-4" role="region" aria-label="Active Incidents">
+        <div className="glass shadow-card hover-shadow transition-all duration-200 p-4" role="region" aria-label="Active Incidents">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Active Incidents</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{incidents.length}</p>
+              <h3 className="text-sm font-medium text-[var(--color-secondary)]">Active Incidents</h3>
+              <p className="mt-1 text-2xl font-bold text-[var(--color-text)]">{incidents.length}</p>
             </div>
-            <div className="p-2 rounded-md bg-blue-50">
-              <MapPin className="h-5 w-5 text-blue-500" />
+            <div className="p-2 rounded-md bg-[var(--color-primary)/10%]">
+              <MapPin className="h-5 w-5 text-[var(--color-primary)]" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow border p-4" role="region" aria-label="Critical Zones">
+        <div className="glass shadow-card hover-shadow transition-all duration-200 p-4" role="region" aria-label="Critical Zones">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Critical Zones</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{criticalZones.length}</p>
+              <h3 className="text-sm font-medium text-[var(--color-secondary)]">Critical Zones</h3>
+              <p className="mt-1 text-2xl font-bold text-[var(--color-text)]">{criticalZones.length}</p>
             </div>
-            <div className="p-2 rounded-md bg-red-50">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+            <div className="p-2 rounded-md bg-[var(--color-accent-red)/10%]">
+              <AlertTriangle className="h-5 w-5 text-[var(--color-accent-red)]" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow border p-4" role="region" aria-label="Survivors Detected">
+        <div className="glass shadow-card hover-shadow transition-all duration-200 p-4" role="region" aria-label="Survivors Detected">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Survivors Detected</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{survivorsDetected}</p>
+              <h3 className="text-sm font-medium text-[var(--color-secondary)]">Survivors Detected</h3>
+              <p className="mt-1 text-2xl font-bold text-[var(--color-text)]">{survivorsDetected}</p>
             </div>
-            <div className="p-2 rounded-md bg-green-50">
-              <Users className="h-5 w-5 text-green-500" />
+            <div className="p-2 rounded-md bg-[var(--color-accent-green)/10%]">
+              <Users className="h-5 w-5 text-[var(--color-accent-green)]" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow border p-4" role="region" aria-label="Active Rescue Teams">
+        <div className="glass shadow-card hover-shadow transition-all duration-200 p-4" role="region" aria-label="Active Rescue Teams">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Active Rescue Teams</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{activeRescueTeams}</p>
+              <h3 className="text-sm font-medium text-[var(--color-secondary)]">Active Rescue Teams</h3>
+              <p className="mt-1 text-2xl font-bold text-[var(--color-text)]">{activeRescueTeams}</p>
             </div>
-            <div className="p-2 rounded-md bg-indigo-50">
-              <Users className="h-5 w-5 text-indigo-500" />
+            <div className="p-2 rounded-md bg-[var(--color-primary)/10%]">
+              <Users className="h-5 w-5 text-[var(--color-primary)]" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow border p-4" role="region" aria-label="Mesh-connected Devices">
+        <div className="glass shadow-card hover-shadow transition-all duration-200 p-4" role="region" aria-label="Mesh-connected Devices">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Mesh-connected Devices</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">0</p>
+              <h3 className="text-sm font-medium text-[var(--color-secondary)]">Mesh-connected Devices</h3>
+              <p className="mt-1 text-2xl font-bold text-[var(--color-text)]">0</p>
             </div>
-            <div className="p-2 rounded-md bg-yellow-50">
-              <Zap className="h-5 w-5 text-yellow-500" />
+            <div className="p-2 rounded-md bg-[var(--color-accent-blue)/10%]">
+              <Zap className="h-5 w-5 text-[var(--color-accent-blue)]" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow border p-4" role="region" aria-label="Unresolved Reports">
+        <div className="glass shadow-card hover-shadow transition-all duration-200 p-4" role="region" aria-label="Unresolved Reports">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Unresolved Reports</h3>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{unresolvedReports}</p>
+              <h3 className="text-sm font-medium text-[var(--color-secondary)]">Unresolved Reports</h3>
+              <p className="mt-1 text-2xl font-bold text-[var(--color-text)]">{unresolvedReports}</p>
             </div>
-            <div className="p-2 rounded-md bg-purple-50">
-              <ClipboardList className="h-5 w-5 text-purple-500" />
+            <div className="p-2 rounded-md bg-[var(--color-primary)/10%]">
+              <ClipboardList className="h-5 w-5 text-[var(--color-primary)]" />
             </div>
           </div>
         </div>
@@ -173,9 +173,9 @@ export const OverviewPage = () => {
 
       <div className="grid gap-6">
         <div className="col-span-1 lg:col-span-3">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Live Incident Map</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Live Incident Map</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="h-96 w-full relative z-0">
@@ -199,8 +199,8 @@ export const OverviewPage = () => {
                       >
                         <Popup>
                           <div className="p-2">
-                            <h3 className="font-bold text-red-600">{incident.title}</h3>
-                            <p className="text-sm">{incident.description}</p>
+                            <h3 className="font-bold text-[var(--color-accent-red)]">{incident.title}</h3>
+                            <p className="text-[var(--color-text)] text-sm">{incident.description}</p>
                           </div>
                         </Popup>
                       </Marker>
@@ -212,60 +212,60 @@ export const OverviewPage = () => {
           </Card>
         </div>
         <div className="col-span-1 lg:col-span-3">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Highest Risk Zones</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Highest Risk Zones</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {topZones.map(zone => (
-                  <div key={zone.id} className={`${zone.severity === 'CRITICAL' ? 'bg-red-50' : 'bg-blue-50'} p-3 rounded-md`}>
+                  <div key={zone.id} className={`${zone.severity === 'CRITICAL' ? 'bg-[var(--color-accent-red)/10%]' : 'bg-[var(--color-accent-blue)/10%]'} p-3 rounded-md`}>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium text-gray-900">{zone.name}</h4>
-                        <p className="text-sm text-gray-500">Risk Score: {zone.risk_score}</p>
+                        <h4 className="font-medium text-[var(--color-text)]">{zone.name}</h4>
+                        <p className="text-[var(--color-secondary)] text-sm">Risk Score: {zone.risk_score}</p>
                       </div>
-                      <div className={`w-3 h-3 ${zone.severity === 'CRITICAL' ? 'bg-red-500' : 'bg-yellow-500'} rounded-full`} />
+                      <div className={`w-3 h-3 ${zone.severity === 'CRITICAL' ? 'bg-[var(--color-accent-red)]' : 'bg-[var(--color-accent-yellow)]'} rounded-full`} />
                     </div>
                   </div>
                 ))}
-                {topZones.length === 0 && <p className="text-sm text-gray-500">No zones reported.</p>}
+                {topZones.length === 0 && <p className="text-[var(--color-secondary)] text-sm">No zones reported.</p>}
               </div>
             </CardContent>
           </Card>
         </div>
         <div className="col-span-1 lg:col-span-3">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Latest Reports</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Latest Reports</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {recentReports.map(report => (
-                  <div key={report.id} className="p-3 bg-gray-50 rounded-md">
+                  <div key={report.id} className="p-3 bg-[var(--color-background)/50%] rounded-md">
                     <div className="flex items-start space-x-3">
                       <div className="flex-shrink-0">
-                        {report.reporter_type === 'AI Detection' ? <Activity className="h-4 w-4 text-gray-400" /> : <Users className="h-4 w-4 text-gray-400" />}
+                        {report.reporter_type === 'AI Detection' ? <Activity className="h-4 w-4 text-[var(--color-secondary)]" /> : <Users className="h-4 w-4 text-[var(--color-secondary)]" />}
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900">{report.reporter_type} report: {report.title}</h4>
-                        <p className="text-sm text-gray-500">{new Date(report.created_at).toLocaleTimeString()} • {report.status}</p>
+                        <h4 className="font-medium text-[var(--color-text)]">{report.reporter_type} report: {report.title}</h4>
+                        <p className="text-[var(--color-secondary)] text-sm">{new Date(report.created_at).toLocaleTimeString()} • {report.status}</p>
                       </div>
                     </div>
                   </div>
                 ))}
-                {recentReports.length === 0 && <p className="text-sm text-gray-500">No recent reports.</p>}
+                {recentReports.length === 0 && <p className="text-[var(--color-secondary)] text-sm">No recent reports.</p>}
               </div>
             </CardContent>
           </Card>
         </div>
         <div className="col-span-1 lg:col-span-3">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>AI Situation Brief</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">AI Situation Brief</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-sm text-gray-600">
+              <div className="text-[var(--color-text)] text-sm">
                 <p className="mb-2">
                   At 14:32, three high-priority zones were identified in the northern sector.
                   Survivor detections increased by 40% over the last hour.
@@ -278,7 +278,7 @@ export const OverviewPage = () => {
                   Recommended actions: Deploy SAR teams to zones A-01 and B-07, establish evacuation routes,
                   and coordinate with fire response units.
                 </p>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="text-[var(--color-primary)] hover:text-[var(--color-text)] border-[var(--color-primary)] hover:border-[var(--color-primary)/50%] hover-shadow transition-all duration-200">
                   View Full Briefing
                 </Button>
               </div>
@@ -286,73 +286,73 @@ export const OverviewPage = () => {
           </Card>
         </div>
         <div className="col-span-1 lg:col-span-3">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Network Health</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Network Health</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <WifiOff className="h-5 w-5 text-blue-500" />
+                <div className="w-10 h-10 rounded-lg bg-[var(--color-primary)/10%] flex items-center justify-center">
+                  <WifiOff className="h-5 w-5 text-[var(--color-primary)]" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Internet Connectivity</h4>
-                  <p className="text-sm text-gray-500">Online</p>
+                  <h4 className="font-medium text-[var(--color-text)]">Internet Connectivity</h4>
+                  <p className="text-[var(--color-secondary)] text-sm">Online</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-lg bg-yellow-50 flex items-center justify-center">
-                  <Zap className="h-5 w-5 text-yellow-500" />
+                <div className="w-10 h-10 rounded-lg bg-[var(--color-accent-yellow)/10%] flex items-center justify-center">
+                  <Zap className="h-5 w-5 text-[var(--color-accent-yellow)]" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Mesh Network</h4>
-                  <p className="text-sm text-gray-500">8 devices connected</p>
+                  <h4 className="font-medium text-[var(--color-text)]">Mesh Network</h4>
+                  <p className="text-[var(--color-secondary)] text-sm">8 devices connected</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-                  <Users className="h-5 w-5 text-green-500" />
+                <div className="w-10 h-10 rounded-lg bg-[var(--color-accent-green)/10%] flex items-center justify-center">
+                  <Users className="h-5 w-5 text-[var(--color-accent-green)]" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Peers in Range</h4>
-                  <p className="text-sm text-gray-500">3 devices available</p>
+                  <h4 className="font-medium text-[var(--color-text)]">Peers in Range</h4>
+                  <p className="text-[var(--color-secondary)] text-sm">3 devices available</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
         <div className="col-span-1 lg:col-span-3">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Rescue Resources</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Rescue Resources</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-md">
+                <div className="flex items-center space-x-3 p-3 bg-[var(--color-background)/50%] rounded-md">
                   <div className="flex-shrink-0">
-                    <Users className="h-4 w-4 text-gray-400" />
+                    <Users className="h-4 w-4 text-[var(--color-secondary)]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Medical Units</h4>
-                    <p className="text-sm text-gray-500">4 available</p>
+                    <h4 className="font-medium text-[var(--color-text)]">Medical Units</h4>
+                    <p className="text-[var(--color-secondary)] text-sm">4 available</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-md">
+                <div className="flex items-center space-x-3 p-3 bg-[var(--color-background)/50%] rounded-md">
                   <div className="flex-shrink-0">
-                    <Activity className="h-4 w-4 text-gray-400" />
+                    <Activity className="h-4 w-4 text-[var(--color-secondary)]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Fire Response</h4>
-                    <p className="text-sm text-gray-500">2 available</p>
+                    <h4 className="font-medium text-[var(--color-text)]">Fire Response</h4>
+                    <p className="text-[var(--color-secondary)] text-sm">2 available</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-md">
+                <div className="flex items-center space-x-3 p-3 bg-[var(--color-background)/50%] rounded-md">
                   <div className="flex-shrink-0">
-                    <MapPin className="h-4 w-4 text-gray-400" />
+                    <MapPin className="h-4 w-4 text-[var(--color-secondary)]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Shelters</h4>
-                    <p className="text-sm text-gray-500">6 available</p>
+                    <h4 className="font-medium text-[var(--color-text)]">Shelters</h4>
+                    <p className="text-[var(--color-secondary)] text-sm">6 available</p>
                   </div>
                 </div>
               </div>

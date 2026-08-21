@@ -18,11 +18,11 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b shadow-sm">
+    <header className="glass border-b [border-color:var(--color-border)/30%] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center justify-between w-full sm:w-auto">
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-xl font-bold text-gray-800">
+            <Link to="/" className="text-xl font-bold text-[var(--color-primary)]">
               ResQLink
             </Link>
           </div>
@@ -37,7 +37,7 @@ export const Header = () => {
             {/* Menu button for mobile */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              className="p-2 rounded-md text-[var(--color-secondary)] hover:text-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)/30%] hover-shadow transition-all duration-200"
               aria-label="Open main menu"
             >
               {isMenuOpen ? (
@@ -50,20 +50,16 @@ export const Header = () => {
             {/* Network status */}
             <div className="flex items-center space-x-2 text-sm">
               <span className="flex items-center">
-                <WifiOff className={networkStatus.internet ? 'text-green-500' : 'text-red-500'} h-4 w-4 />
-                <span className="ml-1">Internet: {networkStatus.internet ? 'Online' : 'Offline'}</span>
-              </span>
-              <span className="flex items-center">
-                <Zap className={networkStatus.mesh ? 'text-green-500' : 'text-yellow-500'} h-4 w-4 />
-                <span className="ml-1">Mesh: {networkStatus.mesh ? 'Active' : 'Inactive'}</span>
+                <WifiOff className={networkStatus.internet ? 'text-[var(--color-accent-green)]' : 'text-[var(--color-accent-red)]'} h-4 w-4 />
+                <span className="ml-1 text-[var(--color-text)]">Internet: {networkStatus.internet ? 'Online' : 'Offline'}</span>
               </span>
             </div>
           </div>
           <div className="flex items-center space-x-4">
             {/* Language Selector */}
             <div className="relative">
-              <select 
-                className="bg-transparent border border-gray-300 text-gray-700 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-1.5"
+              <select
+                className="bg-[var(--color-background)/50%] border border-[var(--color-border)/50%] text-[var(--color-text)] text-sm rounded-md focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] block p-1.5 backdrop-blur-sm"
                 onChange={(e) => i18n.changeLanguage(e.target.value)}
                 defaultValue={i18n.language}
               >
@@ -73,14 +69,14 @@ export const Header = () => {
             </div>
             {/* User profile and notifications */}
             <div className="relative">
-              <button className="p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
-                <Bell className="h-5 w-5 text-gray-500 hover:text-gray-600" />
+              <button className="p-1 rounded-md hover:bg-[var(--color-primary)/10%] focus:outline-none focus:ring-2 focus-ring-[var(--color-primary)/30%] hover-shadow transition-all duration-200">
+                <Bell className="h-5 w-5 text-[var(--color-secondary)] hover:text-[var(--color-primary)]" />
               </button>
             </div>
             <div className="relative">
-              <button className="flex items-center space-x-2 p-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
-                <span className="hidden sm:block">Admin</span>
-                <Users className="h-5 w-5 text-gray-500 hover:text-gray-600" />
+              <button className="flex items-center space-x-2 p-1 rounded-md hover:bg-[var(--color-primary)/10%] focus:outline-none focus:ring-2 focus-ring-[var(--color-primary)/30%] hover-shadow transition-all duration-200">
+                <span className="hidden sm:block text-[var(--color-text)]">Admin</span>
+                <Users className="h-5 w-5 text-[var(--color-secondary)] hover:text-[var(--color-primary)]" />
               </button>
             </div>
           </div>

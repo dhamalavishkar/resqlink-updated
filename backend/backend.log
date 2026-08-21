@@ -11781,3 +11781,12 @@ INFO:httpx:HTTP Request: GET https://mxnegxdjwcarmohhzajl.supabase.co/rest/v1/in
 INFO:     127.0.0.1:58910 - "GET /api/v1/incidents HTTP/1.1" 200 OK
 INFO:httpx:HTTP Request: GET https://mxnegxdjwcarmohhzajl.supabase.co/rest/v1/resources?select=%2A&limit=100 "HTTP/2 200 OK"
 INFO:     127.0.0.1:62543 - "GET /api/v1/resources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51984 - "GET /api/v1/mesh/peers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59221 - "GET /api/v1/mesh/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58701 - "GET /api/v1/mesh/messages?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52280 - "GET /api/v1/mesh/peers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52280 - "GET /api/v1/mesh/messages?limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52280 - "GET /api/v1/mesh/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52280 - "GET /api/v1/mesh/peers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53241 - "GET /api/v1/mesh/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55060 - "GET /api/v1/mesh/messages?limit=50 HTTP/1.1" 200 OK

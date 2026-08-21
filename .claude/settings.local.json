@@ -21,7 +21,10 @@
       "Bash(taskkill *)",
       "Bash(cmd /c \"taskkill /PID 194912 /F\")",
       "Bash(cmd /c \"wmic process where processid=194912 call terminate\")",
-      "Bash(cmd /c \"tasklist /FI \\\\\"PID eq 194912\\\\\"\")"
+      "Bash(cmd /c \"tasklist /FI \\\\\"PID eq 194912\\\\\"\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }

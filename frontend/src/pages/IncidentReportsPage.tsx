@@ -180,20 +180,21 @@ export const IncidentReportsPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Incident Reports</h2>
+        <h2 className="text-xl font-bold text-[var(--color-text)]">Incident Reports</h2>
         <div className="flex items-center space-x-3">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="hover-shadow transition-all duration-200">
             Refresh
           </Button>
           <Button
             variant="default"
             size="sm"
             onClick={() => setShowCreateForm(!showCreateForm)}
+            className="hover-shadow transition-all duration-200"
           >
             {showCreateForm ? 'Cancel' : 'New Report'}
           </Button>
           {showCreateForm && (
-            <Button variant="outline" size="sm" onClick={() => setShowCreateForm(false)}>
+            <Button variant="outline" size="sm" onClick={() => setShowCreateForm(false)} className="hover-shadow transition-all duration-200">
               Close
             </Button>
           )}
@@ -203,17 +204,17 @@ export const IncidentReportsPage = () => {
       {showCreateForm && (
         <Card className="col-span-1 lg:col-span-3">
           <CardHeader>
-            <CardTitle>Create New Report</CardTitle>
+            <CardTitle className="text-[var(--color-text)] font-semibold">Create New Report</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleCreateReport} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Reporter Type</label>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Reporter Type</label>
                   <select
                     value={formData.reporterType}
                     onChange={(e) => setFormData(prev => ({ ...prev, reporterType: e.target.value as 'Citizen' | 'Volunteer' | 'Responder' | 'Drone' | 'AI Detection' | 'CCTV' }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] backdrop-blur-sm"
                   >
                     <option value="Citizen">Citizen</option>
                     <option value="Volunteer">Volunteer</option>
@@ -225,11 +226,11 @@ export const IncidentReportsPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Severity</label>
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Severity</label>
                   <select
                     value={formData.severity}
                     onChange={(e) => setFormData(prev => ({ ...prev, severity: e.target.value as 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL' }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] backdrop-blur-sm"
                   >
                     <option value="LOW">Low</option>
                     <option value="NORMAL">Normal</option>
@@ -240,45 +241,45 @@ export const IncidentReportsPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Title</label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] backdrop-blur-sm"
                   placeholder="Enter report title"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] backdrop-blur-sm"
                   rows="3"
                   placeholder="Enter detailed description"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Location</label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] backdrop-blur-sm"
                   placeholder="Enter location"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Confidence (0-1)</label>
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Confidence (0-1)</label>
                 <input
                   type="number"
                   value={formData.confidence}
                   onChange={(e) => setFormData(prev => ({ ...prev, confidence: parseFloat(e.target.value) || 0.8 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] backdrop-blur-sm"
                   min="0"
                   max="1"
                   step="0.1"
@@ -286,7 +287,7 @@ export const IncidentReportsPage = () => {
               </div>
 
               {createError && (
-                <div className="bg-red-50 text-red-500 p-3 rounded-md">
+                <div className="p-3 bg-[var(--color-accent-red)/10%] text-[var(--color-accent-red)] rounded-md">
                   {createError}
                 </div>
               )}
@@ -299,6 +300,7 @@ export const IncidentReportsPage = () => {
                     e.preventDefault();
                     setShowCreateForm(false);
                   }}
+                  className="hover-shadow transition-all duration-200"
                 >
                   Cancel
                 </Button>
@@ -307,6 +309,7 @@ export const IncidentReportsPage = () => {
                   size="sm"
                   type="submit"
                   disabled={createLoading}
+                  className="hover-shadow transition-all duration-200"
                 >
                   {createLoading ? 'Creating...' : 'Submit Report'}
                 </Button>
@@ -316,19 +319,19 @@ export const IncidentReportsPage = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="col-span-1 lg:col-span-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <Card className="lg:col-span-1">
             <CardHeader>
-              <CardTitle>Filters</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Filters</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Reporter Types</span>
+                  <Users className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Reporter Types</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-wrap space-x-2">
+                  <div className="flex flex-wrap gap-2">
                     {['Citizen', 'Volunteer', 'Responder', 'Drone', 'AI Detection', 'CCTV'].map(type => (
                       <label key={type} className="flex items-center space-x-2">
                         <input
@@ -340,8 +343,9 @@ export const IncidentReportsPage = () => {
                               : filters.reporterTypes.filter(t => t !== type);
                             setFilters(prev => ({ ...prev, reporterTypes: newList }));
                           }}
+                          className="hover-shadow transition-all duration-200 text-[var(--color-primary)]"
                         />
-                        <span className="text-sm">{type}</span>
+                        <span className="text-sm text-[var(--color-text)]">{type}</span>
                       </label>
                     ))}
                   </div>
@@ -350,11 +354,11 @@ export const IncidentReportsPage = () => {
 
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <AlertTriangle className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Severity Levels</span>
+                  <AlertTriangle className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Severity Levels</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-wrap space-x-2">
+                  <div className="flex flex-wrap gap-2">
                     {['LOW', 'NORMAL', 'HIGH', 'CRITICAL'].map(severity => (
                       <label key={severity} className="flex items-center space-x-2">
                         <input
@@ -366,11 +370,13 @@ export const IncidentReportsPage = () => {
                               : filters.severities.filter(s => s !== severity);
                             setFilters(prev => ({ ...prev, severities: newList }));
                           }}
+                          className="hover-shadow transition-all duration-200 text-[var(--color-primary)]"
                         />
                         <Badge
                           variant={severity === 'CRITICAL' ? 'destructive' :
                                    severity === 'HIGH' ? 'outline' :
                                    severity === 'NORMAL' ? 'secondary' : 'default'}
+                          className="text-[var(--color-text)]"
                         >
                           {severity}
                         </Badge>
@@ -382,11 +388,11 @@ export const IncidentReportsPage = () => {
 
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <ClipboardList className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Status</span>
+                  <ClipboardList className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Status</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-wrap space-x-2">
+                  <div className="flex flex-wrap gap-2">
                     {['NEW', 'VERIFIED', 'INVESTIGATING', 'RESOLVED', 'REJECTED'].map(status => (
                       <label key={status} className="flex items-center space-x-2">
                         <input
@@ -398,8 +404,9 @@ export const IncidentReportsPage = () => {
                               : filters.statuses.filter(s => s !== status);
                             setFilters(prev => ({ ...prev, statuses: newList }));
                           }}
+                          className="hover-shadow transition-all duration-200 text-[var(--color-primary)]"
                         />
-                        <span className="text-sm">{status}</span>
+                        <span className="text-sm text-[var(--color-text)]">{status}</span>
                       </label>
                     ))}
                   </div>
@@ -408,10 +415,10 @@ export const IncidentReportsPage = () => {
 
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <RefreshCw className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Sort By</span>
+                  <RefreshCw className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Sort By</span>
                 </div>
-                <div className="flex items-wrap space-x-2">
+                <div className="flex flex-wrap gap-2">
                   <label className="flex items-center space-x-2">
                     <input
                       type="radio"
@@ -421,6 +428,7 @@ export const IncidentReportsPage = () => {
                       onChange={(e) => {
                         setSortBy(e.target.value as typeof sortBy);
                       }}
+                      className="hover-shadow transition-all duration-200 text-[var(--color-primary)]"
                     />
                     Timestamp
                   </label>
@@ -433,6 +441,7 @@ export const IncidentReportsPage = () => {
                       onChange={(e) => {
                         setSortBy(e.target.value as typeof sortBy);
                       }}
+                      className="hover-shadow transition-all duration-200 text-[var(--color-primary)]"
                     />
                     Severity
                   </label>
@@ -445,6 +454,7 @@ export const IncidentReportsPage = () => {
                       onChange={(e) => {
                         setSortBy(e.target.value as typeof sortBy);
                       }}
+                      className="hover-shadow transition-all duration-200 text-[var(--color-primary)]"
                     />
                     Confidence
                   </label>
@@ -455,6 +465,7 @@ export const IncidentReportsPage = () => {
                       type="checkbox"
                       checked={sortDesc}
                       onChange={(e) => setSortDesc(e.target.checked)}
+                      className="hover-shadow transition-all duration-200 text-[var(--color-primary)]"
                     />
                     Descending
                   </label>
@@ -463,78 +474,77 @@ export const IncidentReportsPage = () => {
             </CardContent>
           </Card>
 
-          <Card className="col-span-1 lg:col-span-3">
+          <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Reports List</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Reports List</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="overflow-y-auto h-96">
-                {/* Table Header */}
-                <div className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider grid grid-cols-12 gap-4">
-                  <div className="col-span-2">ID</div>
-                  <div className="col-span-3">Title</div>
-                  <div className="col-span-2">Reporter</div>
-                  <div className="col-span-1">Severity</div>
-                  <div className="col-span-1">Status</div>
-                  <div className="col-span-2">Location</div>
-                  <div className="col-span-1 text-gray-500">Time</div>
-                </div>
-
-                {/* Table Body */}
-                <div className="divide-y divide-gray-200">
-                  {filteredReports.map((report, index) => (
-                    <div key={report.id} className="px-4 py-3 text-sm text-gray-700 grid grid-cols-12 gap-4">
-                      <div className="col-span-2">{report.id}</div>
-                      <div className="col-span-3">{report.title}</div>
-                      <div className="col-span-2 flex items-center">
-                        {report.reporterType === 'Citizen' ? (
-                          <Users className="h-4 w-4 text-blue-500 mr-2" />
-                        ) : report.reporterType === 'Volunteer' ? (
-                          <UserIcon className="h-4 w-4 text-green-500 mr-2" />
-                        ) : report.reporterType === 'Responder' ? (
-                          <Activity className="h-4 w-4 text-red-500 mr-2" />
-                        ) : report.reporterType === 'Drone' ? (
-                          <MapPin className="h-4 w-4 text-purple-500 mr-2" />
-                        ) : report.reporterType === 'AI Detection' ? (
-                          <AlertTriangle className="h-4 w-4 text-orange-500 mr-2" />
-                        ) : (
-                          <ClipboardList className="h-4 w-4 text-gray-500 mr-2" />
-                        )}
-                        <span className="text-gray-600 capitalize">
-                          {report.reporterType.toLowerCase()}
-                        </span>
-                      </div>
-                      <div className="col-span-1">
-                        <Badge
-                          variant={report.severity === 'CRITICAL' ? 'destructive' :
-                            report.severity === 'HIGH' ? 'outline' :
-                            report.severity === 'NORMAL' ? 'secondary' : 'default'}
-                        >
-                          {report.severity.toLowerCase()}
-                        </Badge>
-                      </div>
-                      <div className="col-span-1">
-                        <Badge
-                          variant={report.status === 'NEW' ? 'default' :
-                            report.status === 'VERIFIED' ? 'secondary' :
-                            report.status === 'INVESTIGATING' ? 'outline' :
-                            report.status === 'RESOLVED' ? 'success' : 'destructive'}
-                        >
-                          {report.status.toLowerCase()}
-                        </Badge>
-                      </div>
-                      <div className="col-span-2">{report.location}</div>
-                      <div className="col-span-1 text-gray-500">{report.timestamp}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {filteredReports.length === 0 ? (
-                  <div className="text-center py-8">
-                    <ClipboardList className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">No reports match the current filters</p>
-                  </div>
-                ) : null}
+              <div className="overflow-auto max-h-96">
+                <table className="w-full text-sm border-collapse">
+                  <thead className="sticky top-0 bg-gray-50 z-10">
+                    <tr className="border-b border-gray-200">
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">ID</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Title</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Reporter</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-20">Severity</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Status</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">Location</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {filteredReports.map((report) => (
+                      <tr key={report.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-3 py-2 text-xs font-mono text-gray-400 max-w-[7rem]">
+                          <div className="truncate" title={report.id}>{report.id}</div>
+                        </td>
+                        <td className="px-3 py-2 font-medium text-gray-800 max-w-[12rem]">
+                          <div className="truncate" title={report.title}>{report.title}</div>
+                        </td>
+                        <td className="px-3 py-2 max-w-[6rem]">
+                          <div className="flex items-center gap-1 min-w-0">
+                            {report.reporterType === 'Citizen' ? (
+                              <Users className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
+                            ) : report.reporterType === 'Volunteer' ? (
+                              <UserIcon className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />
+                            ) : report.reporterType === 'Responder' ? (
+                              <Activity className="h-3.5 w-3.5 text-red-500 flex-shrink-0" />
+                            ) : report.reporterType === 'Drone' ? (
+                              <MapPin className="h-3.5 w-3.5 text-purple-500 flex-shrink-0" />
+                            ) : report.reporterType === 'AI Detection' ? (
+                              <AlertTriangle className="h-3.5 w-3.5 text-yellow-500 flex-shrink-0" />
+                            ) : (
+                              <ClipboardList className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" />
+                            )}
+                            <span className="truncate text-xs text-gray-500 capitalize">{report.reporterType.toLowerCase()}</span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant={report.severity === 'CRITICAL' ? 'destructive' : report.severity === 'HIGH' ? 'outline' : report.severity === 'NORMAL' ? 'secondary' : 'default'}>
+                            {report.severity.toLowerCase()}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant={report.status === 'NEW' ? 'default' : report.status === 'VERIFIED' ? 'secondary' : report.status === 'INVESTIGATING' ? 'outline' : report.status === 'RESOLVED' ? 'success' : 'destructive'}>
+                            {report.status.toLowerCase()}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2 text-xs text-gray-600 max-w-[7rem]">
+                          <div className="truncate" title={report.location}>{report.location}</div>
+                        </td>
+                        <td className="px-3 py-2 text-xs text-gray-400 whitespace-nowrap">{report.formattedTimestamp}</td>
+                      </tr>
+                    ))}
+                    {filteredReports.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="text-center py-10">
+                          <ClipboardList className="h-6 w-6 text-gray-300 mx-auto mb-2" />
+                          <p className="text-gray-400 text-sm">No reports match the current filters</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>

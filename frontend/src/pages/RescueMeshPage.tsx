@@ -156,7 +156,7 @@ export const RescueMeshPage = () => {
     } else {
       handleOffline();
     }
-    
+
     // Connect to WebRTC signaling server
     syncEngine.connectSignaling();
 
@@ -204,7 +204,7 @@ export const RescueMeshPage = () => {
     if (!newMessage.content.trim() || !newMessage.recipient) return;
 
     setIsSending(true);
-    
+
     const newMsg = {
       content: newMessage.content,
       priority: newMessage.priority,
@@ -246,7 +246,7 @@ export const RescueMeshPage = () => {
       from: 'local',
       to: newMsg.receiver_id
     }, ...prev]);
-    
+
     // Update peer queued/delivered counts
     setPeers(prev =>
       prev.map(peer =>
@@ -276,12 +276,13 @@ export const RescueMeshPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Rescue Mesh Network</h2>
+        <h2 className="text-xl font-bold text-[var(--color-text)]">Rescue Mesh Network</h2>
         <div className="flex items-center space-x-3">
           <Button
             variant={meshStatus === 'OFFLINE' ? 'default' : 'destructive'}
             size="sm"
             onClick={toggleOfflineMode}
+            className="hover-shadow transition-all duration-200"
           >
             {meshStatus === 'OFFLINE' ? 'Reconnect Mesh (Go Online)' : 'Simulate Offline (Disconnect)'}
           </Button>
@@ -290,33 +291,39 @@ export const RescueMeshPage = () => {
 
       <div className="grid grid-cols-1 gap-4">
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Network Status</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Network Status</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-3 text-sm">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
                   {meshStatus === 'ONLINE' ? (
-                    <WifiOff className="h-5 w-5 text-green-500" />
+                    <WifiOff className="h-5 w-5 text-[var(--color-accent-green)]" />
                   ) : meshStatus === 'DEGRADED' ? (
-                    <WifiOff className="h-5 w-5 text-yellow-500" />
+                    <WifiOff className="h-5 w-5 text-[var(--color-accent-yellow)]" />
                   ) : meshStatus === 'OFFLINE' ? (
-                    <WifiOff className="h-5 w-5 text-red-500" />
+                    <WifiOff className="h-5 w-5 text-[var(--color-accent-red)]" />
                   ) : (
-                    <Zap className="h-5 w-5 text-blue-500" />
+                    <Zap className="h-5 w-5 text-[var(--color-accent-blue)]" />
                   )}
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-900">Network State</h4>
-                  <p className="text-sm">{meshStatus}</p>
+                  <h4 className="font-medium text-[var(--color-text)]">Network State</h4>
+                  <p className="text-[var(--color-secondary)]">{meshStatus}</p>
                 </div>
+              </div>
+
+              {/* Show Device ID so user knows who they are */}
+              <div className="mt-4 p-3 bg-[var(--color-primary)/10%] border border-[var(--color-primary)/30%] rounded-lg">
+                <h4 className="font-medium text-[var(--color-primary)] text-sm">Your Device ID</h4>
+                <p className="text-[var(--color-text)] text-xs font-mono mt-1">{syncEngine.peerId}</p>
               </div>
 
               <div className="mt-4">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Users className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Connected Peers</span>
+                  <Users className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Connected Peers</span>
                 </div>
                 <div className="space-y-2">
                   {peers.map((peer, index) => (
@@ -324,16 +331,16 @@ export const RescueMeshPage = () => {
                       <div className="flex items-start space-x-3">
                         <div className="flex-shrink-0">
                           {peer.status === 'connected' ? (
-                            <Users className="h-4 w-4 text-green-500" />
+                            <Users className="h-4 w-4 text-[var(--color-accent-green)]" />
                           ) : peer.status === 'connecting' ? (
-                            <Loader2 className="h-4 w-4 text-yellow-500 animate-spin" />
+                            <Loader2 className="h-4 w-4 text-[var(--color-accent-yellow)] animate-spin" />
                           ) : (
-                            <Users className="h-4 w-4 text-gray-400" />
+                            <Users className="h-4 w-4 text-[var(--color-secondary)]" />
                           )}
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900">{peer.name}</h4>
-                          <p className="text-xs text-gray-500">Status: {peer.status}</p>
+                          <h4 className="font-medium text-[var(--color-text)]">{peer.name}</h4>
+                          <p className="text-[var(--color-secondary)] text-xs">Status: {peer.status}</p>
                           <div className="flex items-center space-x-4 text-xs mt-1">
                             <span>Hops: {peer.hops}</span>
                             <span>Queued: {peer.queued}</span>
@@ -351,6 +358,7 @@ export const RescueMeshPage = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setMeshStatus(prev => (prev === 'ONLINE' ? 'DEGRADED' : 'ONLINE'))}
+                  className="hover-shadow transition-all duration-200"
                 >
                   Simulate Network Degradation
                 </Button>
@@ -358,6 +366,7 @@ export const RescueMeshPage = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => setMeshStatus(prev => (prev === 'OFFLINE' ? 'ONLINE' : 'OFFLINE'))}
+                  className="hover-shadow transition-all duration-200"
                 >
                   Simulate Network Loss
                 </Button>
@@ -367,21 +376,21 @@ export const RescueMeshPage = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Send Message</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Send Message</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <form onSubmit={handleSendMessage} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
                     Recipient
                   </label>
                   <select
                     value={newMessage.recipient}
                     onChange={(e) => setNewMessage(prev => ({ ...prev, recipient: e.target.value }))}
                     disabled={isSending}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                    className="w-full border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md px-3 py-2 backdrop-blur-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
                   >
                     <option value="">Select a peer</option>
                     {peers
@@ -395,14 +404,14 @@ export const RescueMeshPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
                     Message Priority
                   </label>
                   <select
                     value={newMessage.priority}
                     onChange={(e) => setNewMessage(prev => ({ ...prev, priority: e.target.value }))}
                     disabled={isSending}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                    className="w-full border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md px-3 py-2 backdrop-blur-sm focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)]"
                   >
                     <option value="LOW">Low</option>
                     <option value="NORMAL">Normal</option>
@@ -412,7 +421,7 @@ export const RescueMeshPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[var(--color-text)] mb-1">
                     Message Content
                   </label>
                   <textarea
@@ -420,7 +429,7 @@ export const RescueMeshPage = () => {
                     onChange={(e) => setNewMessage(prev => ({ ...prev, content: e.target.value }))}
                     rows={3}
                     disabled={isSending}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md px-3 py-2 focus:ring-2 focus:ring-[var(--color-primary)] backdrop-blur-sm"
                     placeholder="Type your message here..."
                   />
                 </div>
@@ -431,6 +440,7 @@ export const RescueMeshPage = () => {
                     size="sm"
                     onClick={handleSendMessage}
                     disabled={isSending || !newMessage.content.trim() || !newMessage.recipient}
+                    className="hover-shadow transition-all duration-200"
                   >
                     {isSending ? 'Sending...' : 'Send Message'}
                   </Button>
@@ -439,17 +449,17 @@ export const RescueMeshPage = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Demo Room Code</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Demo Room Code</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="bg-gray-50 p-4 rounded-md">
-                <div className="font-mono text-2xl font-bold letter-spacing-wide">{roomCode}</div>
-                <p className="mt-2 text-sm text-gray-500">
+              <div className="bg-[var(--color-background)/50%] p-4 rounded-md">
+                <div className="font-mono text-2xl font-bold letter-spacing-wide text-[var(--color-text)]">{roomCode}</div>
+                <p className="mt-2 text-[var(--color-secondary)] text-sm">
                   Share this code with peers to connect in demo mode
                 </p>
-                <Button variant="outline" size="xs" className="mt-2">
+                <Button variant="outline" size="xs" className="hover-shadow transition-all duration-200 text-[var(--color-primary)] border-[var(--color-primary)] hover:border-[var(--color-primary)/50%] hover:text-[var(--color-text)]">
                   Copy Code
                 </Button>
               </div>
@@ -460,9 +470,9 @@ export const RescueMeshPage = () => {
 
       <div className="grid grid-cols-1 gap-4">
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Message History</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Message History</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="h-96 overflow-y-auto">
@@ -473,29 +483,30 @@ export const RescueMeshPage = () => {
                         <div className="flex items-start space-x-3">
                           <div className="flex-shrink-0">
                             {msg.priority === 'CRITICAL' ? (
-                              <Activity className="h-4 w-4 text-red-500" />
+                              <Activity className="h-4 w-4 text-[var(--color-accent-red)]" />
                             ) : msg.priority === 'HIGH' ? (
-                              <Activity className="h-4 w-4 text-orange-500" />
+                              <Activity className="h-4 w-4 text-[var(--color-accent-orange)]" />
                             ) : msg.priority === 'NORMAL' ? (
-                              <Users className="h-4 w-4 text-gray-500" />
+                              <Users className="h-4 w-4 text-[var(--color-secondary)]" />
                             ) : (
-                              <MapPin className="h-4 w-4 text-blue-500" />
+                              <MapPin className="h-4 w-4 text-[var(--color-primary)]" />
                             )}
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-900">{msg.content}</h4>
-                            <p className="text-sm text-gray-500 flex items-center space-x-2">
+                            <h4 className="font-medium text-[var(--color-text)]">{msg.content}</h4>
+                            <p className="text-sm text-[var(--color-secondary)] flex items-center space-x-2">
                               <span className="font-medium">{msg.priority}</span>
                               <Badge
                                 variant={msg.status === 'DELIVERED' ? 'secondary' :
                                          msg.status === 'QUEUED' ? 'outline' :
                                          msg.status === 'CREATED' ? 'default' :
                                          msg.status === 'FORWARDED' ? 'secondary' : 'destructive'}
+                                className="text-[var(--color-text)]"
                               >
                                 {msg.status}
                               </Badge>
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-[var(--color-secondary)]">
                               From: {msg.from} → To: {msg.to} • {msg.timestamp}
                             </p>
                           </div>
@@ -505,8 +516,8 @@ export const RescueMeshPage = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <ClipboardList className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">No messages yet</p>
+                    <ClipboardList className="h-6 w-6 text-[var(--color-secondary)] mx-auto mb-2" />
+                    <p className="text-[var(--color-secondary)] text-sm">No messages yet</p>
                   </div>
                 )}
               </div>
@@ -515,42 +526,42 @@ export const RescueMeshPage = () => {
         </div>
 
         <div className="lg:col-span-1">
-          <Card>
+          <Card className="glass shadow-card hover-shadow transition-all duration-200">
             <CardHeader>
-              <CardTitle>Network Statistics</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Network Statistics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Total Peers</span>
+                  <Users className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Total Peers</span>
                 </div>
-                <p className="text-right text-sm font-medium">{peers.length}</p>
+                <p className="text-right text-sm font-medium text-[var(--color-text)]">{peers.length}</p>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <Zap className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Active Connections</span>
+                  <Zap className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Active Connections</span>
                 </div>
-                <p className="text-right text-sm font-medium">
+                <p className="text-right text-sm font-medium text-[var(--color-text)]">
                   {peers.filter(p => p.status === 'connected').length}
                 </p>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <ClipboardList className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Queued Messages</span>
+                  <ClipboardList className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Queued Messages</span>
                 </div>
-                <p className="text-right text-sm font-medium">
+                <p className="text-right text-sm font-medium text-[var(--color-text)]">
                   {peers.reduce((sum, peer) => sum + peer.queued, 0)}
                 </p>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-gray-900">Delivered Messages</span>
+                  <CheckCircle2 className="h-4 w-4 text-[var(--color-secondary)]" />
+                  <span className="font-medium text-[var(--color-text)]">Delivered Messages</span>
                 </div>
-                <p className="text-right text-sm font-medium">
+                <p className="text-right text-sm font-medium text-[var(--color-text)]">
                   {peers.reduce((sum, peer) => sum + peer.delivered, 0)}
                 </p>
               </div>
@@ -561,3 +572,5 @@ export const RescueMeshPage = () => {
     </div>
   );
 };
+
+export default RescueMeshPage;

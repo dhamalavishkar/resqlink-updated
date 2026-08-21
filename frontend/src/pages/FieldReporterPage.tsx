@@ -31,7 +31,7 @@ export const FieldReporterPage = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [disasterType, setDisasterType] = useState('flood');
   const [description, setDescription] = useState('');
-  
+
   const [coordinates, setCoordinates] = useState<{lat: number, lng: number} | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -120,28 +120,28 @@ export const FieldReporterPage = () => {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Field Reporter</h2>
-          <p className="text-gray-500">Upload media from the disaster zone for instant AI logistics analysis.</p>
+          <h2 className="text-2xl font-bold text-[var(--color-text)]">Field Reporter</h2>
+          <p className="text-[var(--color-secondary)]">Upload media from the disaster zone for instant AI logistics analysis.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Upload Form */}
-        <Card>
+        <Card className="glass shadow-card hover-shadow transition-all duration-200">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center">
-              <Camera className="w-5 h-5 mr-2 text-blue-600" />
+            <CardTitle className="text-[var(--color-text)] font-semibold text-lg flex items-center">
+              <Camera className="w-5 h-5 mr-2 text-[var(--color-primary)]" />
               Upload Evidence
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              
+
               {/* Disaster Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Disaster Type</label>
-                <select 
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Disaster Type</label>
+                <select
+                  className="w-full rounded-md border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] p-2 border backdrop-blur-sm"
                   value={disasterType}
                   onChange={(e) => setDisasterType(e.target.value)}
                 >
@@ -156,9 +156,9 @@ export const FieldReporterPage = () => {
 
               {/* Media Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Media (Image/Video)</label>
-                <div 
-                  className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${preview ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}`}
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Media (Image/Video)</label>
+                <div
+                  className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${preview ? 'border-[var(--color-primary)] bg-[var(--color-primary)/10%]' : 'border-[var(--color-border)/30%] hover:bg-[var(--color-background)/50%]'}`}
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {preview ? (
@@ -168,19 +168,19 @@ export const FieldReporterPage = () => {
                       ) : (
                         <img src={preview} alt="Preview" className="max-h-48 mx-auto rounded" />
                       )}
-                      <p className="text-xs text-blue-600 mt-2 font-medium">Click to change media</p>
+                      <p className="text-[var(--color-secondary)] text-xs font-medium mt-2">Click to change media</p>
                     </div>
                   ) : (
                     <div className="py-4">
-                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                      <p className="mt-2 text-sm text-gray-600">Click to capture or upload</p>
-                      <p className="text-xs text-gray-500">Supports JPG, PNG, MP4</p>
+                      <Upload className="mx-auto h-12 w-12 text-[var(--color-secondary)]" />
+                      <p className="mt-2 text-sm text-[var(--color-secondary)]">Click to capture or upload</p>
+                      <p className="text-[var(--color-secondary)] text-xs">Supports JPG, PNG, MP4</p>
                     </div>
                   )}
-                  <input 
-                    type="file" 
-                    className="hidden" 
-                    ref={fileInputRef} 
+                  <input
+                    type="file"
+                    className="hidden"
+                    ref={fileInputRef}
                     accept="image/*,video/*"
                     onChange={handleFileChange}
                   />
@@ -189,42 +189,42 @@ export const FieldReporterPage = () => {
 
               {/* Location Picker */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Location Coordinates</label>
-                
+                <label className="block text-sm font-medium text-[var(--color-text)]">Location Coordinates</label>
+
                 <div className="flex space-x-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={getLocationFromGPS}
                     disabled={isLocating}
-                    className="flex-1"
+                    className="flex-1 hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
                   >
-                    {isLocating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Navigation className="w-4 h-4 mr-2" />}
+                    {isLocating ? <Loader2 className="w-4 h-4 mr-2 animate-spin text-[var(--color-primary)]" /> : <Navigation className="w-4 h-4 mr-2 text-[var(--color-secondary)]" />}
                     Auto GPS
                   </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setShowMap(!showMap)}
-                    className="flex-1"
+                    className="flex-1 hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
                   >
-                    <MapPin className="w-4 h-4 mr-2" />
+                    <MapPin className="w-4 h-4 mr-2 text-[var(--color-secondary)]" />
                     Pick on Map
                   </Button>
                 </div>
 
                 {coordinates && (
-                  <p className="text-sm text-green-600 flex items-center mt-2">
+                  <p className="text-[var(--color-accent-green)] text-sm flex items-center mt-2">
                     <CheckCircle2 className="w-4 h-4 mr-1" />
                     Lat: {coordinates.lat.toFixed(4)}, Lng: {coordinates.lng.toFixed(4)}
                   </p>
                 )}
 
                 {showMap && (
-                  <div className="h-[200px] w-full mt-2 rounded-md overflow-hidden border border-gray-300">
-                    <MapContainer 
-                      center={coordinates ? [coordinates.lat, coordinates.lng] : [20.5937, 78.9629]} 
-                      zoom={coordinates ? 15 : 4} 
+                  <div className="h-[200px] w-full mt-2 rounded-md overflow-hidden border">
+                    <MapContainer
+                      center={coordinates ? [coordinates.lat, coordinates.lng] : [20.5937, 78.9629]}
+                      zoom={coordinates ? 15 : 4}
                       style={{ height: '100%', width: '100%' }}
                     >
                       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -239,9 +239,9 @@ export const FieldReporterPage = () => {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Additional Context (Optional)</label>
-                <textarea 
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
+                <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Additional Context (Optional)</label>
+                <textarea
+                  className="w-full rounded-md border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] p-2 border backdrop-blur-sm"
                   rows={2}
                   placeholder="e.g., Water is rising fast, road is blocked."
                   value={description}
@@ -250,21 +250,21 @@ export const FieldReporterPage = () => {
               </div>
 
               {error && (
-                <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm flex items-start">
-                  <AlertTriangle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+                <div className="p-3 bg-[var(--color-accent-red)/10%] text-[var(--color-accent-red)] rounded-md text-sm flex items-start">
+                  <AlertTriangle className="w-4 h-4 mr-2 mt-0.5 text-[var(--color-accent-red)] flex-shrink-0" />
                   {error}
                 </div>
               )}
 
-              <Button type="submit" className="w-full" disabled={isSubmitting || !file || !coordinates}>
+              <Button type="submit" className="w-full hover-shadow transition-all duration-200" disabled={isSubmitting || !file || !coordinates}>
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin text-[var(--color-primary)]" />
                     Analyzing Media via AI...
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4 mr-2" />
+                    <Upload className="w-4 h-4 mr-2 text-[var(--color-primary)]" />
                     Upload & Analyze
                   </>
                 )}
@@ -274,43 +274,43 @@ export const FieldReporterPage = () => {
         </Card>
 
         {/* AI Results */}
-        <Card className={`transition-all duration-500 ${result ? 'opacity-100 translate-y-0' : 'opacity-50 translate-y-4'}`}>
+        <Card className={`glass shadow-card hover-shadow transition-all duration-200 ${result ? 'opacity-100 translate-y-0' : 'opacity-50 translate-y-4'}`}>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center text-blue-800">
-              <CheckCircle2 className="w-5 h-5 mr-2" />
+            <CardTitle className="text-[var(--color-text)] font-semibold text-lg flex items-center">
+              <CheckCircle2 className="w-5 h-5 mr-2 text-[var(--color-accent-green)]" />
               AI Logistics Estimation
             </CardTitle>
           </CardHeader>
           <CardContent>
             {result ? (
               <div className="space-y-4">
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                  <h3 className="font-semibold text-blue-900 mb-2">{result.incident_title}</h3>
-                  <div className="inline-flex px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded">
+                <div className="p-4 bg-[var(--color-primary)/10%] rounded-lg border border-[var(--color-primary)/30%]">
+                  <h3 className="font-semibold text-[var(--color-primary)] mb-2">{result.incident_title}</h3>
+                  <div className="inline-flex px-2 py-1 bg-[var(--color-accent-red)/20%] text-[var(--color-accent-red)] text-xs font-bold rounded">
                     SEVERITY: {result.severity}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 border rounded-md">
-                    <p className="text-xs text-gray-500 font-medium uppercase">Est. People Stuck</p>
-                    <p className="text-2xl font-bold text-gray-900">{result.people_count}</p>
+                    <p className="text-[var(--color-secondary)] text-xs font-medium uppercase">Est. People Stuck</p>
+                    <p className="text-2xl font-bold text-[var(--color-text)]">{result.people_count}</p>
                   </div>
                   <div className="p-3 border rounded-md">
-                    <p className="text-xs text-gray-500 font-medium uppercase">Food (24h)</p>
-                    <p className="text-2xl font-bold text-gray-900">{result.food_needed_kg} <span className="text-sm font-normal text-gray-500">kg</span></p>
+                    <p className="text-[var(--color-secondary)] text-xs font-medium uppercase">Food (24h)</p>
+                    <p className="text-2xl font-bold text-[var(--color-text)]">{result.food_needed_kg} <span className="text-[var(--color-secondary)] text-sm font-normal">kg</span></p>
                   </div>
                   <div className="p-3 border rounded-md">
-                    <p className="text-xs text-gray-500 font-medium uppercase">Water (24h)</p>
-                    <p className="text-2xl font-bold text-gray-900">{result.water_needed_liters} <span className="text-sm font-normal text-gray-500">L</span></p>
+                    <p className="text-[var(--color-secondary)] text-xs font-medium uppercase">Water (24h)</p>
+                    <p className="text-2xl font-bold text-[var(--color-text)]">{result.water_needed_liters} <span className="text-[var(--color-secondary)] text-sm font-normal">L</span></p>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900 mb-2 mt-4">Required Emergency Equipment</h4>
+                  <h4 className="text-[var(--color-text)] text-sm font-bold mb-2 mt-4">Required Emergency Equipment</h4>
                   <div className="flex flex-wrap gap-2">
                     {result.emergency_equipment?.map((eq: string, idx: number) => (
-                      <span key={idx} className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">
+                      <span key={idx} className="bg-[var(--color-accent-yellow)/20%] text-[var(--color-accent-yellow)] px-2 py-1 rounded text-sm">
                         {eq}
                       </span>
                     ))}
@@ -318,14 +318,14 @@ export const FieldReporterPage = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900 mb-2 mt-4">Broadcast Survival Advice</h4>
-                  <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-md border border-gray-200 italic">
+                  <h4 className="text-[var(--color-text)] text-sm font-bold mb-2 mt-4">Broadcast Survival Advice</h4>
+                  <p className="text-[var(--color-text)] text-sm text-[var(--color-secondary)] bg-[var(--color-background)/50%] p-3 rounded-md border border-[var(--color-border)/30%] italic">
                     "{result.survival_advice}"
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+              <div className="flex flex-col items-center justify-center h-64 text-[var(--color-secondary)]">
                 <Camera className="w-12 h-12 mb-2 opacity-50" />
                 <p>Upload media to view AI analysis</p>
               </div>

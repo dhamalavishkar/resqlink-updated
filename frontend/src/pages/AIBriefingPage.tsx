@@ -75,14 +75,14 @@ export const AIBriefingPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <h2 className="text-xl font-bold text-gray-900">AI Situation Briefing</h2>
+          <h2 className="text-xl font-bold text-[var(--color-text)]">AI Situation Briefing</h2>
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Template:</label>
+            <label className="block text-sm font-medium text-[var(--color-text)] mb-1">Template:</label>
             <select
               value={templateType}
               onChange={(e) => setTemplateType(e.target.value)}
               disabled={isGenerating}
-              className="border border-gray-300 rounded-md px-3 py-2 bg-white"
+              className="border border-[var(--color-border)/50%] bg-[var(--color-background)/50%] text-[var(--color-text)] rounded-md px-3 py-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] backdrop-blur-sm"
             >
               {availableTemplates.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -98,6 +98,7 @@ export const AIBriefingPage = () => {
             size="sm"
             onClick={generateBriefing}
             disabled={isGenerating}
+            className="hover-shadow transition-all duration-200 text-[var(--color-secondary)] border-[var(--color-border)/30%] hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
           >
             {isGenerating ? 'Generating...' : 'Generate Briefing'}
           </Button>
@@ -111,6 +112,7 @@ export const AIBriefingPage = () => {
               }
             }}
             disabled={!briefing}
+            className="hover-shadow transition-all duration-200 text-[var(--color-primary)] border-[var(--color-primary)] hover:bg-[var(--color-primary)/10%]"
           >
             <Copy className="h-4 w-4 mr-1" /> Copy
           </Button>
@@ -133,6 +135,7 @@ export const AIBriefingPage = () => {
               }
             }}
             disabled={!briefing}
+            className="hover-shadow transition-all duration-200 text-[var(--color-primary)] border-[var(--color-primary)] hover:bg-[var(--color-primary)/10%]"
           >
             <Share2 className="h-4 w-4 mr-1" /> Export
           </Button>
@@ -143,28 +146,28 @@ export const AIBriefingPage = () => {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Latest Briefing</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Latest Briefing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {isGenerating ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full border-4 border-blue-500 border-t-transparent h-8 w-8 mx-auto" />
-                  <p className="mt-2 text-sm text-gray-500">Generating AI briefing...</p>
+                  <div className="animate-spin rounded-full border-4 border-[var(--color-primary)] border-t-transparent h-8 w-8 mx-auto" />
+                  <p className="mt-2 text-[var(--color-text)]/60 text-sm">Generating AI briefing...</p>
                 </div>
               ) : briefing ? (
-                <div className="whitespace-pre-wrap bg-gray-50 p-4 rounded-md text-sm text-gray-700">
+                <div className="whitespace-pre-wrap bg-[var(--color-background)/50%] p-4 rounded-md text-[var(--color-text)]/60 text-sm">
                   {briefing}
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <AlertTriangle className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">
+                  <AlertTriangle className="h-6 w-6 text-[var(--color-accent-red)]" />
+                  <p className="text-[var(--color-text)]/60 text-sm">
                     No briefing generated yet. Click "Generate Briefing" to create an AI-generated situation report based on current data.
                   </p>
                 </div>
               )}
               {lastUpdated && !isGenerating && (
-                <div className="text-xs text-gray-500 text-right mt-2">
+                <div className="text-xs text-[var(--color-text)]/50 text-right mt-2">
                   Last updated: {lastUpdated}
                 </div>
               )}
@@ -175,20 +178,20 @@ export const AIBriefingPage = () => {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Briefing Components</CardTitle>
+              <CardTitle className="text-[var(--color-text)] font-semibold">Briefing Components</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
-                    <Activity className="h-4 w-4 text-blue-500" />
+                    <Activity className="h-4 w-4 text-[var(--color-accent-blue)]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Data Sources</h4>
-                    <p className="text-sm text-gray-500">
+                    <h4 className="font-medium text-[var(--color-text)]">Data Sources</h4>
+                    <p className="text-[var(--color-text)]/60 text-sm">
                       The AI briefing synthesizes data from:
                     </p>
-                    <ul className="mt-2 list-disc list-inside text-sm text-gray-600">
+                    <ul className="mt-2 list-disc list-inside text-[var(--color-text)]/50 text-sm">
                       <li>Computer vision detections (survivors, fire, damage)</li>
                       <li>Incident reports from citizens and responders</li>
                       <li>Risk analysis scores for all zones</li>
@@ -200,22 +203,22 @@ export const AIBriefingPage = () => {
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
-                    <Users className="h-4 w-4 text-green-500" />
+                    <Users className="h-4 w-4 text-[var(--color-accent-green)]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Update Frequency</h4>
-                    <p className="text-sm text-gray-500">
+                    <h4 className="font-medium text-[var(--color-text)]">Update Frequency</h4>
+                    <p className="text-[var(--color-text)]/60 text-sm">
                       Briefings are generated on demand or can be set to auto-update at specified intervals during active operations.
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0">
-                    <Flame className="h-4 w-4 text-red-500" />
+                    <Flame className="h-4 w-4 text-[var(--color-accent-red)]" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Customization</h4>
-                    <p className="text-sm text-gray-500">
+                    <h4 className="font-medium text-[var(--color-text)]">Customization</h4>
+                    <p className="text-[var(--color-text)]/60 text-sm">
                       Organizations can tailor the briefing format, included sections, and technical depth to match their standard operating procedures.
                     </p>
                   </div>
